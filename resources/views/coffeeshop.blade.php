@@ -179,9 +179,8 @@
                         </div>
 
                         <div class="w-20 flex flex-col items-center space-y-2.5 shrink-0">
-                            <div class="w-20 h-20 bg-stone-900 rounded-xl border border-stone-800 overflow-hidden flex flex-col items-center justify-center relative text-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-800/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                <span class="text-[8px] text-stone-600 mt-1 tracking-wider uppercase">Espresso</span>
+                            <div class="w-20 h-20 bg-stone-900 rounded-xl border border-stone-800 overflow-hidden relative">
+                                <img src="{{ asset('menu-image/es-kopi-susu-gula-aren.webp') }}" alt="Aura Ice Coffee Melts" class="w-full h-full object-cover">
                                 <div class="absolute top-1 left-1 bg-amber-800 text-[8px] font-semibold px-1 py-0.5 rounded text-amber-50 scale-90">Top</div>
                             </div>
 
@@ -210,7 +209,11 @@
                             <!-- Dengan pemanggilan Storage::url -->
                             <div class="w-full aspect-square bg-stone-100 border border-stone-200/60 rounded-xl overflow-hidden mb-3 flex items-center justify-center">
                                 @if($menu->gambar)
-                                    <img src="{{ Storage::url($menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="w-full h-full object-cover">
+                                    @if(file_exists(public_path('menu-image/' . $menu->gambar)))
+                                        <img src="{{ asset('menu-image/' . $menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="w-full h-full object-cover">
+                                    @else
+                                        <img src="{{ Storage::url($menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="w-full h-full object-cover">
+                                    @endif
                                 @else
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 @endif
@@ -330,45 +333,7 @@
                         </div>
                     </div>
 
-                    <!-- 4. MILK OPTION (Milk, Oatside) -->
-                    <div id="milk-group" class="bg-white rounded-xl p-4 border border-stone-100 shadow-xs">
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-900">Milk Option</h4>
-                            <span class="text-[10px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">Must be selected max. 1</span>
-                        </div>
-                        <div class="space-y-3 text-sm">
-                            <label class="flex items-center justify-between cursor-pointer py-1">
-                                <span class="text-stone-700 font-medium">Standard Milk</span>
-                                <input type="radio" name="milk_opt" value="Milk" checked data-price="0" onchange="calculateModalTotal()" class="w-4 h-4 text-amber-800 focus:ring-amber-800 border-stone-300">
-                            </label>
-                            <label class="flex items-center justify-between cursor-pointer py-1">
-                                <span class="text-stone-700 font-medium">Oatside Milk <span class="text-xs text-amber-800 font-semibold">(+Rp3.000)</span></span>
-                                <input type="radio" name="milk_opt" value="Oatside" data-price="3000" onchange="calculateModalTotal()" class="w-4 h-4 text-amber-800 focus:ring-amber-800 border-stone-300">
-                            </label>
-                        </div>
-                    </div>
 
-                    <!-- 5. EXTRA TOPPING (Espresso Shot, Whipped Cream, Caramel Drizzle) -->
-                    <div id="topping-group" class="bg-white rounded-xl p-4 border border-stone-100 shadow-xs">
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-900">Extra Topping</h4>
-                            <span class="text-[10px] font-semibold text-stone-500 bg-stone-100 px-2 py-0.5 rounded">Optional (Multiple select)</span>
-                        </div>
-                        <div class="space-y-3 text-sm">
-                            <label class="flex items-center justify-between cursor-pointer py-1">
-                                <span class="text-stone-700 font-medium">Extra Shot Espresso <span class="text-xs text-amber-800 font-semibold">(+Rp5.000)</span></span>
-                                <input type="checkbox" name="topping_opt" value="Extra Shot" data-price="5000" onchange="calculateModalTotal()" class="w-4 h-4 text-amber-800 focus:ring-amber-800 border-stone-300 rounded">
-                            </label>
-                            <label class="flex items-center justify-between cursor-pointer py-1">
-                                <span class="text-stone-700 font-medium">Whipped Cream <span class="text-xs text-amber-800 font-semibold">(+Rp4.000)</span></span>
-                                <input type="checkbox" name="topping_opt" value="Whipped Cream" data-price="4000" onchange="calculateModalTotal()" class="w-4 h-4 text-amber-800 focus:ring-amber-800 border-stone-300 rounded">
-                            </label>
-                            <label class="flex items-center justify-between cursor-pointer py-1">
-                                <span class="text-stone-700 font-medium">Caramel Drizzle <span class="text-xs text-amber-800 font-semibold">(+Rp3.000)</span></span>
-                                <input type="checkbox" name="topping_opt" value="Caramel Drizzle" data-price="3000" onchange="calculateModalTotal()" class="w-4 h-4 text-amber-800 focus:ring-amber-800 border-stone-300 rounded">
-                            </label>
-                        </div>
-                    </div>
 
                     <!-- CATATAN TAMBAHAN -->
                     <div class="bg-white rounded-xl p-4 border border-stone-100 shadow-xs">
@@ -585,19 +550,21 @@
             document.querySelector('input[name="temp_opt"][value="Ice"]').checked = true;
             document.querySelector('input[name="sugar_opt"][value="Normal Sugar"]').checked = true;
             document.querySelector('input[name="size_opt"][value="Reguler"]').checked = true;
-            document.querySelector('input[name="milk_opt"][value="Milk"]').checked = true;
-            document.querySelectorAll('input[name="topping_opt"]').forEach(cb => cb.checked = false);
 
             // Tampilkan/sembunyikan opsi kustomisasi berdasarkan tipe produk
-            const groups = ['temp-group', 'sugar-group', 'size-group', 'milk-group', 'topping-group'];
+            const groups = ['temp-group', 'sugar-group', 'size-group'];
             groups.forEach(gid => {
-                document.getElementById(gid).style.display = (tipe === 'food') ? 'none' : 'block';
+                const el = document.getElementById(gid);
+                if (el) {
+                    el.style.display = (tipe === 'food') ? 'none' : 'block';
+                }
             });
 
             // Untuk kategori "Kopi Panas" dan "Es Kopi": sembunyikan grup Temperature saja,
-            // add-on lain (Sugar, Size, Milk, Topping) tetap tampil seperti biasa.
+            // add-on lain (Sugar, Size) tetap tampil seperti biasa.
             if (isHotCoffeeKategori(kategori) || isIceCoffeeKategori(kategori)) {
-                document.getElementById('temp-group').style.display = 'none';
+                const tempEl = document.getElementById('temp-group');
+                if (tempEl) tempEl.style.display = 'none';
             }
 
             calculateModalTotal();
@@ -658,17 +625,6 @@
                     selectedSize = sizeEl.value;
                     tambahanHarga += parseInt(sizeEl.getAttribute('data-price')) || 0;
                 }
-
-                const milkEl = document.querySelector('input[name="milk_opt"]:checked');
-                if (milkEl) {
-                    selectedMilk = milkEl.value;
-                    tambahanHarga += parseInt(milkEl.getAttribute('data-price')) || 0;
-                }
-
-                document.querySelectorAll('input[name="topping_opt"]:checked').forEach(el => {
-                    selectedToppings.push(el.value);
-                    tambahanHarga += parseInt(el.getAttribute('data-price')) || 0;
-                });
             }
 
             const notes = document.getElementById('opt-item-notes').value;
