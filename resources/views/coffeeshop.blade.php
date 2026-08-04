@@ -153,40 +153,41 @@
         <!-- AREA KONTEN DAFTAR MENU -->
         <main class="flex-1 bg-white">
 
-            <!-- REKOMENDASI AI UTAMA -->
-            <div id="signature" class="px-5 pt-5 mb-6 menu-item scroll-mt-36" data-id="ai-01" data-nama="Aura Ice Coffee Melts" data-harga="22000" data-tipe="drink" data-kategori="Es Kopi">
+            <!-- REKOMENDASI KOPI UTAMA -->
+            {{-- TODO (Backend): isi data rekomendasi di sini. Gunakan variabel Blade,
+                 contoh: $rekomendasi->id_menu, $rekomendasi->nama_menu, $rekomendasi->harga,
+                 $rekomendasi->deskripsi, $rekomendasi->tipe, $rekomendasi->kategori->nama_kategori --}}
+            <div id="signature" class="px-5 pt-5 mb-6 menu-item scroll-mt-36" data-id="" data-nama="" data-harga="" data-tipe="" data-kategori="">
                 <div class="bg-gradient-to-r from-stone-950 via-[#2c1d11] to-stone-900 rounded-2xl p-5 text-white shadow-xl relative overflow-hidden border border-amber-950/40">
                     <div class="absolute -right-8 -top-8 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl"></div>
 
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-1.5 bg-amber-400/10 text-amber-400 text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 rounded-md border border-amber-400/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                            <span>AI Recommendation</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                            <span>Rekomendasi Kopi</span>
                         </div>
-                        <span class="text-[10px] text-stone-400 tracking-wide font-light">ID3 Optimal Decision</span>
+                        <span class="text-[10px] text-stone-400 tracking-wide font-light">Pilihan Favorit</span>
                     </div>
 
                     <div class="flex items-start justify-between space-x-4">
                         <div class="flex-1">
-                            <h3 class="text-base font-serif font-bold text-amber-100 tracking-wide">Aura Ice Coffee Melts</h3>
+                            <h3 class="text-base font-serif font-bold text-amber-100 tracking-wide"></h3>
                             <p class="text-xs text-stone-300 mt-1.5 leading-relaxed font-light">
-                                Perpaduan espresso arabika dengan kelembutan susu pilihan, disajikan dingin untuk menyegarkan suasana siang hari ini.
                             </p>
                             <div class="mt-4 flex items-center space-x-2.5">
-                                <span class="text-base font-bold text-amber-400">Rp22.000</span>
-                                <span class="text-[9px] text-stone-400 bg-stone-900/60 px-2 py-0.5 rounded border border-stone-800 font-mono">Gain 0.842</span>
+                                <span class="text-base font-bold text-amber-400"></span>
                             </div>
                         </div>
 
                         <div class="w-20 flex flex-col items-center space-y-2.5 shrink-0">
                             <div class="w-20 h-20 bg-stone-900 rounded-xl border border-stone-800 overflow-hidden flex flex-col items-center justify-center relative text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-800/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                <span class="text-[8px] text-stone-600 mt-1 tracking-wider uppercase">Espresso</span>
+                                <span class="text-[8px] text-stone-600 mt-1 tracking-wider uppercase"></span>
                                 <div class="absolute top-1 left-1 bg-amber-800 text-[8px] font-semibold px-1 py-0.5 rounded text-amber-50 scale-90">Top</div>
                             </div>
 
                             <div class="w-full">
-                                <button class="w-full bg-amber-800 hover:bg-amber-900 text-amber-50 text-xs font-semibold py-1.5 rounded-lg transition shadow-md" onclick="handleAddClick('ai-01')">Add</button>
+                                <button class="w-full bg-amber-800 hover:bg-amber-900 text-amber-50 text-xs font-semibold py-1.5 rounded-lg transition shadow-md" onclick="handleAddClick('')">Add</button>
                             </div>
                         </div>
                     </div>
