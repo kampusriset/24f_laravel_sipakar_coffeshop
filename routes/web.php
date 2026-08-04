@@ -15,9 +15,28 @@ Route::get('/review-order', function () {
     return view('review-order');
 })->name('review-order');
 
+// Halaman pembayaran lama (redirect ke review-order)
 Route::get('/pembayaran', function () {
     return view('pembayaran');
 })->name('pembayaran');
+
+/*
+|--------------------------------------------------------------------------
+| Sistem Pemesanan — POST cart → DB → QRIS
+|--------------------------------------------------------------------------
+*/
+Route::post('/pesanan/simpan', [\App\Http\Controllers\PesananController::class, 'simpan'])
+    ->name('pesanan.simpan');
+
+Route::get('/pesanan/{kode}/bayar', [\App\Http\Controllers\PesananController::class, 'qris'])
+    ->name('pesanan.qris');
+
+Route::get('/pesanan/{kode}/status', [\App\Http\Controllers\PesananController::class, 'checkStatus'])
+    ->name('pesanan.status');
+
+Route::post('/pesanan/{kode}/simulasi-bayar', [\App\Http\Controllers\PesananController::class, 'simulasiBayar'])
+    ->name('pesanan.simulasi-bayar');
+
 
 /*
 |--------------------------------------------------------------------------

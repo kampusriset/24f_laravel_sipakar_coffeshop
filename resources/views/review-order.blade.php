@@ -37,14 +37,51 @@
             </div>
         </div>
 
+        <!-- FORM DATA PEMESAN + TOMBOL CHECKOUT -->
+        <div class="p-4 space-y-3">
+            <div class="border rounded-xl bg-white shadow-sm p-4 space-y-3">
+                <h3 class="font-bold text-sm border-b pb-2 text-stone-800">Data Pemesan</h3>
+
+                <div>
+                    <label class="text-xs font-semibold text-stone-600">Nama Lengkap <span class="text-red-500">*</span></label>
+                    @if(auth()->check())
+                        <input id="input-nama" type="text" value="{{ auth()->user()->name }}"
+                               class="mt-1 w-full border border-stone-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-amber-800 bg-stone-50">
+                    @else
+                        <input id="input-nama" type="text" placeholder="Masukkan nama Anda..."
+                               class="mt-1 w-full border border-stone-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-amber-800">
+                    @endif
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-stone-600">No. HP</label>
+                        <input id="input-hp" type="tel" placeholder="08xx"
+                               class="mt-1 w-full border border-stone-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-amber-800">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-stone-600">No. Meja</label>
+                        <input id="input-meja" type="number" min="1" placeholder="Mis: 5"
+                               class="mt-1 w-full border border-stone-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-amber-800">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="p-4 bg-white border-t sticky bottom-0">
-    <!-- Di review-order.blade.php -->
-<button 
-    onclick="window.location.href='{{ url('/pembayaran') }}'" 
-    class="w-full bg-[#2c1d11] text-amber-50 py-3 rounded-xl font-bold hover:bg-[#3d2a1a] transition">
-    Lanjut Pembayaran
-</button>
-</div>
+            <p id="error-msg" class="hidden text-xs text-red-500 text-center mb-2"></p>
+            <!-- Form tersembunyi — diisi via JS sebelum submit -->
+            <form id="checkout-form" method="POST" action="{{ route('pesanan.simpan') }}">
+                @csrf
+                <input type="hidden" name="nama_pelanggan" id="form-nama">
+                <input type="hidden" name="nomor_hp"       id="form-hp">
+                <input type="hidden" name="nomor_meja"     id="form-meja">
+                <input type="hidden" name="cart"           id="form-cart">
+                <button type="button" onclick="submitCheckout()"
+                    class="w-full bg-[#2c1d11] text-amber-50 py-3 rounded-xl font-bold hover:bg-[#3d2a1a] transition">
+                    Lanjut Pembayaran (QRIS)
+                </button>
+            </form>
 
         <!-- ============ MODAL EDIT ADD-ON (INLINE) ============ -->
         <div id="edit-options-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end justify-center">
@@ -415,8 +452,38 @@
             closeEditModal();
         }
 
+        // ============ SUBMIT CHECKOUT KE SERVER ============
+        function submitCheckout() {
+            const nama  = document.getElementById('input-nama')?.value?.trim();
+            const hp    = document.getElementById('input-hp')?.value?.trim();
+            const meja  = document.getElementById('input-meja')?.value?.trim();
+            const cart  = getCart();
+            const errEl = document.getElementById('error-msg');
+
+            if (!nama) {
+                errEl.textContent = 'Nama lengkap wajib diisi.';
+                errEl.classList.remove('hidden');
+                document.getElementById('input-nama')?.focus();
+                return;
+            }
+            if (cart.length === 0) {
+                errEl.textContent = 'Keranjang kosong. Tambahkan menu terlebih dahulu.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            errEl.classList.add('hidden');
+            document.getElementById('form-nama').value = nama;
+            document.getElementById('form-hp').value   = hp;
+            document.getElementById('form-meja').value = meja;
+            document.getElementById('form-cart').value = JSON.stringify(cart);
+            document.getElementById('checkout-form').submit();
+        }
+
         // Jalankan saat load
         renderCart();
     </script>
+        </div>{{-- sticky bottom --}}
+    </div>{{-- max-w-md container --}}
 </body>
 </html>
