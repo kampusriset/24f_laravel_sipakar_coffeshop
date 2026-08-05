@@ -100,6 +100,11 @@ class MenuResource extends Resource
             ->columns([
                 ImageColumn::make('gambar')
                     ->label('Gambar')
+                    ->state(fn ($record) => $record->gambar 
+                        ? (file_exists(public_path('menu-image/' . $record->gambar)) 
+                            ? asset('menu-image/' . $record->gambar) 
+                            : $record->gambar) 
+                        : null)
                     ->disk('public')
                     ->square(),
 
