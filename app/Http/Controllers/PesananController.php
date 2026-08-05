@@ -20,6 +20,7 @@ class PesananController extends Controller
             'nomor_hp'       => 'nullable|string|max:20',
             'nomor_meja'     => 'nullable|integer|min:1',
             'cart'           => 'required|json',
+            'metode_bayar'   => 'nullable|in:qris,cash',
         ]);
 
         $cart = json_decode($request->cart, true);
@@ -56,7 +57,7 @@ class PesananController extends Controller
                 'nomor_hp'      => $request->nomor_hp,
                 'nomor_meja'    => $request->nomor_meja,
                 'status'        => 'menunggu',
-                'metode_bayar'  => 'qris',
+                'metode_bayar'  => $request->metode_bayar === 'cash' ? 'cash' : 'qris',
                 'subtotal'      => $subtotal,
                 'ppn'           => $ppn,
                 'diskon'        => $diskon,
@@ -80,6 +81,14 @@ class PesananController extends Controller
                 ]);
             }
         });
+
+        // Redirect berdasarkan metode bayar:
+        // cash → halaman konfirmasi pesanan diterima (tanpa perlu scan QR)
+        // qris → halaman QRIS pembayaran
+        if ($request->metode_bayar === 'cash') {
+            return redirect()->route('pesanan.qris', ['kode' => $pesanan->kode_pesanan])
+                ->with('metode', 'cash');
+        }
 
         return redirect()->route('pesanan.qris', ['kode' => $pesanan->kode_pesanan]);
     }

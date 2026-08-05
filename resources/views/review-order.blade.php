@@ -68,18 +68,66 @@
             </div>
         </div>
 
+        <!-- PILIHAN METODE PEMBAYARAN -->
+        <div class="px-4 pb-2">
+            <div class="border rounded-xl bg-white shadow-sm p-4 space-y-3">
+                <h3 class="font-bold text-sm border-b pb-2 text-stone-800">Metode Pembayaran <span class="text-red-500">*</span></h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- QRIS -->
+                    <button id="btn-qris" onclick="pilihMetodeBayar('qris')"
+                        class="flex flex-col items-center gap-2 border-2 border-stone-200 rounded-xl p-3.5 transition hover:border-amber-800 hover:bg-amber-50/50 active:scale-95">
+                        <div class="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-bold text-stone-800">QRIS</p>
+                            <p class="text-[10px] text-stone-400 mt-0.5">Scan & bayar</p>
+                        </div>
+                    </button>
+
+                    <!-- Cash / Kasir -->
+                    <button id="btn-cash" onclick="pilihMetodeBayar('cash')"
+                        class="flex flex-col items-center gap-2 border-2 border-stone-200 rounded-xl p-3.5 transition hover:border-amber-800 hover:bg-amber-50/50 active:scale-95">
+                        <div class="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-stone-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs font-bold text-stone-800">Bayar di Kasir</p>
+                            <p class="text-[10px] text-stone-400 mt-0.5">Cash / manual</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Informasi metode terpilih -->
+                <div id="info-qris" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <p class="text-xs text-amber-800">Setelah checkout, kamu akan diarahkan ke halaman QRIS untuk menyelesaikan pembayaran.</p>
+                </div>
+                <div id="info-cash" class="hidden bg-stone-50 border border-stone-200 rounded-xl p-3 flex items-start gap-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-stone-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <p class="text-xs text-stone-600">Pesananmu akan dikirim ke kasir. Lakukan pembayaran tunai langsung di kasir.</p>
+                </div>
+            </div>
+        </div>
+
         <div class="p-4 bg-white border-t sticky bottom-0">
             <p id="error-msg" class="hidden text-xs text-red-500 text-center mb-2"></p>
             <!-- Form tersembunyi — diisi via JS sebelum submit -->
             <form id="checkout-form" method="POST" action="{{ route('pesanan.simpan') }}">
                 @csrf
-                <input type="hidden" name="nama_pelanggan" id="form-nama">
-                <input type="hidden" name="nomor_hp"       id="form-hp">
-                <input type="hidden" name="nomor_meja"     id="form-meja">
-                <input type="hidden" name="cart"           id="form-cart">
+                <input type="hidden" name="nama_pelanggan"  id="form-nama">
+                <input type="hidden" name="nomor_hp"        id="form-hp">
+                <input type="hidden" name="nomor_meja"      id="form-meja">
+                <input type="hidden" name="cart"            id="form-cart">
+                <input type="hidden" name="metode_bayar"   id="form-metode" value="">
                 <button type="button" onclick="submitCheckout()"
+                    id="btn-checkout"
                     class="w-full bg-[#2c1d11] text-amber-50 py-3 rounded-xl font-bold hover:bg-[#3d2a1a] transition">
-                    Lanjut Pembayaran (QRIS)
+                    Pilih Metode Pembayaran
                 </button>
             </form>
 
@@ -452,6 +500,39 @@
             closeEditModal();
         }
 
+        // ============ PILIH METODE BAYAR ============
+        let metodeBayarTerpilih = null;
+
+        function pilihMetodeBayar(metode) {
+            metodeBayarTerpilih = metode;
+
+            const btnQris  = document.getElementById('btn-qris');
+            const btnCash  = document.getElementById('btn-cash');
+            const infoQris = document.getElementById('info-qris');
+            const infoCash = document.getElementById('info-cash');
+            const btnCheckout = document.getElementById('btn-checkout');
+
+            // Reset style
+            btnQris.classList.remove('border-amber-800', 'bg-amber-50');
+            btnQris.classList.add('border-stone-200');
+            btnCash.classList.remove('border-amber-800', 'bg-amber-50');
+            btnCash.classList.add('border-stone-200');
+            infoQris.classList.add('hidden');
+            infoCash.classList.add('hidden');
+
+            if (metode === 'qris') {
+                btnQris.classList.remove('border-stone-200');
+                btnQris.classList.add('border-amber-800', 'bg-amber-50');
+                infoQris.classList.remove('hidden');
+                btnCheckout.textContent = 'Lanjut Pembayaran (QRIS)';
+            } else {
+                btnCash.classList.remove('border-stone-200');
+                btnCash.classList.add('border-amber-800', 'bg-amber-50');
+                infoCash.classList.remove('hidden');
+                btnCheckout.textContent = 'Pesan & Bayar di Kasir';
+            }
+        }
+
         // ============ SUBMIT CHECKOUT KE SERVER ============
         function submitCheckout() {
             const nama  = document.getElementById('input-nama')?.value?.trim();
@@ -471,12 +552,20 @@
                 errEl.classList.remove('hidden');
                 return;
             }
+            if (!metodeBayarTerpilih) {
+                errEl.textContent = 'Pilih metode pembayaran terlebih dahulu.';
+                errEl.classList.remove('hidden');
+                // Scroll ke bagian metode pembayaran
+                document.getElementById('btn-qris')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
 
             errEl.classList.add('hidden');
-            document.getElementById('form-nama').value = nama;
-            document.getElementById('form-hp').value   = hp;
-            document.getElementById('form-meja').value = meja;
-            document.getElementById('form-cart').value = JSON.stringify(cart);
+            document.getElementById('form-nama').value   = nama;
+            document.getElementById('form-hp').value     = hp;
+            document.getElementById('form-meja').value   = meja;
+            document.getElementById('form-cart').value   = JSON.stringify(cart);
+            document.getElementById('form-metode').value = metodeBayarTerpilih;
             document.getElementById('checkout-form').submit();
         }
 

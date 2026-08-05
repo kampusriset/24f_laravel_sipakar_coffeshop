@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembayaran QRIS - {{ $pesanan->kode_pesanan }}</title>
+    <title>{{ $pesanan->metode_bayar === 'cash' ? 'Pesanan Diterima' : 'Pembayaran QRIS' }} - {{ $pesanan->kode_pesanan }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -50,7 +50,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             </a>
             <div>
-                <h1 class="font-bold text-stone-900 leading-tight">Pembayaran QRIS</h1>
+                <h1 class="font-bold text-stone-900 leading-tight">
+                    {{ $pesanan->metode_bayar === 'cash' ? 'Pesanan Diterima' : 'Pembayaran QRIS' }}
+                </h1>
                 <p class="text-[11px] text-stone-400 font-mono">{{ $pesanan->kode_pesanan }}</p>
             </div>
         </div>
@@ -85,121 +87,106 @@
         </div>
         @endif
 
-        {{-- ── QR Code QRIS Dummy ─────────────────────────────── --}}
-        <div class="px-4 pt-5">
-            <div class="bg-gradient-to-b from-stone-50 to-white border border-stone-200 rounded-2xl p-5 text-center shadow-sm">
-
-                {{-- Header QRIS --}}
-                <div class="flex items-center justify-between mb-4">
-                    <div class="text-left">
-                        <p class="text-[9px] text-stone-400 uppercase tracking-widest">Bayar via</p>
-                        <p class="text-base font-extrabold text-stone-900 tracking-tight">QRIS</p>
-                        <p class="text-[10px] text-stone-500">Quick Response Code Indonesian Standard</p>
+        {{-- ── Konten berdasarkan metode bayar ──────────────────────────── --}}
+        @if($pesanan->metode_bayar === 'cash')
+            {{-- Tampilan Cash / Bayar di Kasir --}}
+            <div class="px-4 pt-5">
+                <div class="bg-gradient-to-b from-stone-50 to-white border border-stone-200 rounded-2xl p-6 text-center shadow-sm">
+                    <div class="text-6xl mb-4">🧾</div>
+                    <h2 class="font-bold text-lg text-stone-900">Pesanan Diterima!</h2>
+                    <p class="text-sm text-stone-500 mt-2 leading-relaxed">Pesananmu sudah masuk ke sistem. Silakan <strong class="text-stone-800">bayar tunai di kasir</strong> dan tunjukkan kode pesanan ini.</p>
+                    <div class="mt-5 bg-stone-900 text-amber-400 font-mono font-bold text-xl tracking-widest rounded-xl py-4 px-6">
+                        {{ $pesanan->kode_pesanan }}
                     </div>
-                    {{-- Logo QRIS placeholder --}}
-                    <div class="bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-lg tracking-widest">
-                        QRIS
-                    </div>
+                    <p class="text-xs text-stone-400 mt-3">Tunjukkan kode ini ke kasir untuk konfirmasi pesanan</p>
                 </div>
-
-                {{-- QR Code box (dummy SVG pattern) --}}
-                <div class="relative inline-block qris-pulse mx-auto">
-                    <div class="w-56 h-56 mx-auto bg-white border-2 border-stone-900 rounded-2xl p-3 shadow-inner">
-                        {{-- Dummy QR Code SVG --}}
-                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                            <!-- Corner squares -->
-                            <rect x="10" y="10" width="55" height="55" fill="none" stroke="#1c1c1c" stroke-width="8" rx="4"/>
-                            <rect x="20" y="20" width="35" height="35" fill="#1c1c1c" rx="2"/>
-                            <rect x="135" y="10" width="55" height="55" fill="none" stroke="#1c1c1c" stroke-width="8" rx="4"/>
-                            <rect x="145" y="20" width="35" height="35" fill="#1c1c1c" rx="2"/>
-                            <rect x="10" y="135" width="55" height="55" fill="none" stroke="#1c1c1c" stroke-width="8" rx="4"/>
-                            <rect x="20" y="145" width="35" height="35" fill="#1c1c1c" rx="2"/>
-                            <!-- Data modules (dummy pattern) -->
-                            <rect x="80" y="10" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="95" y="10" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="110" y="10" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="80" y="25" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="110" y="25" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="80" y="10" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="10" y="80" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="25" y="80" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="10" y="95" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="25" y="95" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="10" y="110" width="8" height="8" fill="#1c1c1c"/>
-                            <!-- Center modules -->
-                            <rect x="80" y="80" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <rect x="100" y="80" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <rect x="80" y="100" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <rect x="100" y="100" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <rect x="120" y="80" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <rect x="120" y="100" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <rect x="80" y="120" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <rect x="100" y="120" width="12" height="12" fill="#1c1c1c" rx="1"/>
-                            <!-- Right side modules -->
-                            <rect x="150" y="80" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="165" y="80" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="180" y="80" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="150" y="95" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="180" y="95" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="150" y="110" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="165" y="110" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="180" y="110" width="8" height="8" fill="#1c1c1c"/>
-                            <!-- Bottom modules -->
-                            <rect x="80" y="150" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="95" y="150" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="110" y="150" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="80" y="165" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="110" y="165" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="80" y="180" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="95" y="180" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="110" y="180" width="8" height="8" fill="#1c1c1c"/>
-                            <!-- Extra scatter -->
-                            <rect x="135" y="150" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="150" y="150" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="165" y="165" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="180" y="150" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="135" y="180" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="180" y="180" width="8" height="8" fill="#1c1c1c"/>
-                            <!-- Timing pattern dots -->
-                            <rect x="10" y="70" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="10" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="25" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="40" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="55" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="80" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="95" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="110" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="135" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="150" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="165" width="8" height="8" fill="#1c1c1c"/>
-                            <rect x="70" y="180" width="8" height="8" fill="#1c1c1c"/>
-                        </svg>
-                    </div>
-                </div>
-
-                {{-- Merchant info --}}
-                <div class="mt-4 space-y-0.5">
-                    <p class="text-xs text-stone-500">Merchant</p>
-                    <p class="font-bold text-stone-900">Aura Coffee — Sudirman</p>
-                    <p class="text-xs text-stone-400">NMID: ID2026080400001</p>
-                </div>
-
-                {{-- Timer --}}
-                <div class="mt-4 flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5 -rotate-90" viewBox="0 0 150 150">
-                        <circle cx="75" cy="75" r="70" fill="none" stroke="#e7e5e4" stroke-width="10"/>
-                        <circle id="timer-circle" cx="75" cy="75" r="70" fill="none"
-                                stroke="#d97706" stroke-width="10"
-                                stroke-dasharray="440"
-                                stroke-dashoffset="0"
-                                stroke-linecap="round"/>
-                    </svg>
-                    <p class="text-xs text-stone-500">QR berlaku <span id="countdown" class="font-bold text-amber-700">05:00</span></p>
-                </div>
-
-                <p class="text-[10px] text-stone-400 mt-2">Scan menggunakan aplikasi e-wallet apapun yang mendukung QRIS</p>
             </div>
-        </div>
+        @else
+            {{-- Tampilan QRIS Scan --}}
+            <div class="px-4 pt-5">
+                <div class="bg-gradient-to-b from-stone-50 to-white border border-stone-200 rounded-2xl p-5 text-center shadow-sm">
+
+                    {{-- Header QRIS --}}
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-left">
+                            <p class="text-[9px] text-stone-400 uppercase tracking-widest">Bayar via</p>
+                            <p class="text-base font-extrabold text-stone-900 tracking-tight">QRIS</p>
+                            <p class="text-[10px] text-stone-500">Quick Response Code Indonesian Standard</p>
+                        </div>
+                        {{-- Logo QRIS placeholder --}}
+                        <div class="bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-lg tracking-widest">
+                            QRIS
+                        </div>
+                    </div>
+
+                    {{-- QR Code box (dummy SVG pattern) --}}
+                    <div class="relative inline-block qris-pulse mx-auto">
+                        <div class="w-56 h-56 mx-auto bg-white border-2 border-stone-900 rounded-2xl p-3 shadow-inner">
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                                <!-- Corner squares -->
+                                <rect x="10" y="10" width="55" height="55" fill="none" stroke="#1c1c1c" stroke-width="8" rx="4"/>
+                                <rect x="20" y="20" width="35" height="35" fill="#1c1c1c" rx="2"/>
+                                <rect x="135" y="10" width="55" height="55" fill="none" stroke="#1c1c1c" stroke-width="8" rx="4"/>
+                                <rect x="145" y="20" width="35" height="35" fill="#1c1c1c" rx="2"/>
+                                <rect x="10" y="135" width="55" height="55" fill="none" stroke="#1c1c1c" stroke-width="8" rx="4"/>
+                                <rect x="20" y="145" width="35" height="35" fill="#1c1c1c" rx="2"/>
+                                <!-- Data modules -->
+                                <rect x="80" y="10" width="8" height="8" fill="#1c1c1c"/><rect x="95" y="10" width="8" height="8" fill="#1c1c1c"/><rect x="110" y="10" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="80" y="25" width="8" height="8" fill="#1c1c1c"/><rect x="110" y="25" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="10" y="80" width="8" height="8" fill="#1c1c1c"/><rect x="25" y="80" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="10" y="95" width="8" height="8" fill="#1c1c1c"/><rect x="25" y="95" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="10" y="110" width="8" height="8" fill="#1c1c1c"/>
+                                <!-- Center modules -->
+                                <rect x="80" y="80" width="12" height="12" fill="#1c1c1c" rx="1"/><rect x="100" y="80" width="12" height="12" fill="#1c1c1c" rx="1"/>
+                                <rect x="80" y="100" width="12" height="12" fill="#1c1c1c" rx="1"/><rect x="100" y="100" width="12" height="12" fill="#1c1c1c" rx="1"/>
+                                <rect x="120" y="80" width="12" height="12" fill="#1c1c1c" rx="1"/><rect x="120" y="100" width="12" height="12" fill="#1c1c1c" rx="1"/>
+                                <rect x="80" y="120" width="12" height="12" fill="#1c1c1c" rx="1"/><rect x="100" y="120" width="12" height="12" fill="#1c1c1c" rx="1"/>
+                                <!-- Right side -->
+                                <rect x="150" y="80" width="8" height="8" fill="#1c1c1c"/><rect x="165" y="80" width="8" height="8" fill="#1c1c1c"/><rect x="180" y="80" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="150" y="95" width="8" height="8" fill="#1c1c1c"/><rect x="180" y="95" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="150" y="110" width="8" height="8" fill="#1c1c1c"/><rect x="165" y="110" width="8" height="8" fill="#1c1c1c"/><rect x="180" y="110" width="8" height="8" fill="#1c1c1c"/>
+                                <!-- Bottom -->
+                                <rect x="80" y="150" width="8" height="8" fill="#1c1c1c"/><rect x="95" y="150" width="8" height="8" fill="#1c1c1c"/><rect x="110" y="150" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="80" y="165" width="8" height="8" fill="#1c1c1c"/><rect x="110" y="165" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="80" y="180" width="8" height="8" fill="#1c1c1c"/><rect x="95" y="180" width="8" height="8" fill="#1c1c1c"/><rect x="110" y="180" width="8" height="8" fill="#1c1c1c"/>
+                                <!-- Extra -->
+                                <rect x="135" y="150" width="8" height="8" fill="#1c1c1c"/><rect x="150" y="150" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="165" y="165" width="8" height="8" fill="#1c1c1c"/><rect x="180" y="150" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="135" y="180" width="8" height="8" fill="#1c1c1c"/><rect x="180" y="180" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="70" y="10" width="8" height="8" fill="#1c1c1c"/><rect x="70" y="25" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="70" y="40" width="8" height="8" fill="#1c1c1c"/><rect x="70" y="55" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="70" y="80" width="8" height="8" fill="#1c1c1c"/><rect x="70" y="95" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="70" y="110" width="8" height="8" fill="#1c1c1c"/><rect x="70" y="135" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="70" y="150" width="8" height="8" fill="#1c1c1c"/><rect x="70" y="165" width="8" height="8" fill="#1c1c1c"/>
+                                <rect x="70" y="180" width="8" height="8" fill="#1c1c1c"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    {{-- Merchant info --}}
+                    <div class="mt-4 space-y-0.5">
+                        <p class="text-xs text-stone-500">Merchant</p>
+                        <p class="font-bold text-stone-900">Opoan Coffee</p>
+                        <p class="text-xs text-stone-400">NMID: ID2026080400001</p>
+                    </div>
+
+                    {{-- Timer --}}
+                    <div class="mt-4 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5 -rotate-90" viewBox="0 0 150 150">
+                            <circle cx="75" cy="75" r="70" fill="none" stroke="#e7e5e4" stroke-width="10"/>
+                            <circle id="timer-circle" cx="75" cy="75" r="70" fill="none"
+                                    stroke="#d97706" stroke-width="10"
+                                    stroke-dasharray="440"
+                                    stroke-dashoffset="0"
+                                    stroke-linecap="round"/>
+                        </svg>
+                        <p class="text-xs text-stone-500">QR berlaku <span id="countdown" class="font-bold text-amber-700">05:00</span></p>
+                    </div>
+
+                    <p class="text-[10px] text-stone-400 mt-2">Scan menggunakan aplikasi e-wallet apapun yang mendukung QRIS</p>
+                </div>
+            </div>
+        @endif
 
         {{-- ── Ringkasan Pesanan ──────────────────────────────── --}}
         <div class="px-4 pt-4 space-y-3">
@@ -272,8 +259,19 @@
             </div>
         </div>
 
-        {{-- ── Instruksi --}}
+        {{-- ── Instruksi berdasarkan metode --}}
         <div class="px-4 pt-4">
+            @if($pesanan->metode_bayar === 'cash')
+            <div class="bg-stone-50 border border-stone-200 rounded-2xl p-4">
+                <p class="text-xs font-bold text-stone-700 mb-2">📋 Langkah Selanjutnya:</p>
+                <ol class="text-xs text-stone-600 space-y-1 list-decimal list-inside">
+                    <li>Tunggu antrian pesananmu dipersiapkan</li>
+                    <li>Datang ke kasir dengan menunjukkan kode pesanan</li>
+                    <li>Lakukan pembayaran tunai sebesar <strong>Rp{{ number_format($pesanan->total_akhir, 0, ',', '.') }}</strong></li>
+                    <li>Ambil pesananmu setelah kasir konfirmasi</li>
+                </ol>
+            </div>
+            @else
             <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
                 <p class="text-xs font-bold text-amber-800 mb-2">📋 Cara Bayar:</p>
                 <ol class="text-xs text-amber-700 space-y-1 list-decimal list-inside">
@@ -284,7 +282,9 @@
                     <li>Tunjukkan bukti bayar ke kasir</li>
                 </ol>
             </div>
-        </div>        {{-- ── Simulasi Pembayaran Sukses (Khusus Testing) ── --}}
+            @endif
+        </div>
+
         @if($pesanan->status === 'menunggu')
         <div id="simulasi-wrapper" class="px-4 pt-4">
             <div class="border border-dashed border-amber-400 bg-amber-50/50 rounded-2xl p-4 text-center">

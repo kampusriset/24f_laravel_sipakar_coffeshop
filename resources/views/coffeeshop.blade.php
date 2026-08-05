@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Coffee - Sudirman</title>
+    <title>Opoan Coffee</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html {
@@ -69,7 +69,7 @@
         <!-- HEADER UTAMA -->
         <header class="p-5 border-b border-stone-100 bg-white sticky top-0 z-40">
             <div class="flex justify-between items-center mb-1">
-                <h1 class="text-xl font-serif font-bold tracking-tight text-stone-900">Aura Coffee - Sudirman</h1>
+                <h1 class="text-xl font-serif font-bold tracking-tight text-stone-900">Opoan Coffee</h1>
 
                 <div class="flex items-center space-x-2">
                     <!-- Tombol Search -->
@@ -153,44 +153,63 @@
         <!-- AREA KONTEN DAFTAR MENU -->
         <main class="flex-1 bg-white">
 
-            <!-- REKOMENDASI AI UTAMA -->
-            <div id="signature" class="px-5 pt-5 mb-6 menu-item scroll-mt-36" data-id="ai-01" data-nama="Aura Ice Coffee Melts" data-harga="22000" data-tipe="drink" data-kategori="Es Kopi">
+            <!-- BEST SELLER HARI INI -->
+            @if($bestSellerMenu)
+            <div id="signature" class="px-5 pt-5 mb-6 menu-item scroll-mt-36"
+                 data-id="{{ $bestSellerMenu->id_menu }}"
+                 data-nama="{{ $bestSellerMenu->nama_menu }}"
+                 data-harga="{{ $bestSellerMenu->harga }}"
+                 data-tipe="{{ $bestSellerMenu->tipe ?? 'drink' }}"
+                 data-kategori="{{ $bestSellerMenu->kategori->nama_kategori ?? '' }}">
                 <div class="bg-gradient-to-r from-stone-950 via-[#2c1d11] to-stone-900 rounded-2xl p-5 text-white shadow-xl relative overflow-hidden border border-amber-950/40">
                     <div class="absolute -right-8 -top-8 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl"></div>
 
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-1.5 bg-amber-400/10 text-amber-400 text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 rounded-md border border-amber-400/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                            <span>AI Recommendation</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                            <span>Best Seller Hari Ini</span>
                         </div>
-                        <span class="text-[10px] text-stone-400 tracking-wide font-light">ID3 Optimal Decision</span>
+                        @if($bestSellerMenu->total_terjual > 0)
+                            <span class="text-[10px] text-amber-300/70 tracking-wide font-light">{{ $bestSellerMenu->total_terjual }}x terjual hari ini</span>
+                        @else
+                            <span class="text-[10px] text-stone-400 tracking-wide font-light">Menu Unggulan</span>
+                        @endif
                     </div>
 
                     <div class="flex items-start justify-between space-x-4">
                         <div class="flex-1">
-                            <h3 class="text-base font-serif font-bold text-amber-100 tracking-wide">Aura Ice Coffee Melts</h3>
+                            <h3 class="text-base font-serif font-bold text-amber-100 tracking-wide">{{ $bestSellerMenu->nama_menu }}</h3>
                             <p class="text-xs text-stone-300 mt-1.5 leading-relaxed font-light">
-                                Perpaduan espresso arabika dengan kelembutan susu pilihan, disajikan dingin untuk menyegarkan suasana siang hari ini.
+                                Menu favorit pelanggan hari ini dari kategori {{ $bestSellerMenu->kategori->nama_kategori ?? 'kami' }}.
                             </p>
                             <div class="mt-4 flex items-center space-x-2.5">
-                                <span class="text-base font-bold text-amber-400">Rp22.000</span>
-                                <span class="text-[9px] text-stone-400 bg-stone-900/60 px-2 py-0.5 rounded border border-stone-800 font-mono">Gain 0.842</span>
+                                <span class="text-base font-bold text-amber-400">Rp{{ number_format($bestSellerMenu->harga, 0, ',', '.') }}</span>
+                                @if($bestSellerMenu->total_terjual > 0)
+                                    <span class="text-[9px] text-stone-400 bg-stone-900/60 px-2 py-0.5 rounded border border-stone-800 font-mono">🔥 {{ $bestSellerMenu->total_terjual }} sold today</span>
+                                @endif
                             </div>
                         </div>
 
                         <div class="w-20 flex flex-col items-center space-y-2.5 shrink-0">
                             <div class="w-20 h-20 bg-stone-900 rounded-xl border border-stone-800 overflow-hidden relative">
-                                <img src="{{ asset('menu-image/es-kopi-susu-gula-aren.webp') }}" alt="Aura Ice Coffee Melts" class="w-full h-full object-cover">
-                                <div class="absolute top-1 left-1 bg-amber-800 text-[8px] font-semibold px-1 py-0.5 rounded text-amber-50 scale-90">Top</div>
+                                @if($bestSellerMenu->gambar)
+                                    <img src="{{ asset('menu-image/' . $bestSellerMenu->gambar) }}" alt="{{ $bestSellerMenu->nama_menu }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0114 0z"/></svg>
+                                    </div>
+                                @endif
+                                <div class="absolute top-1 left-1 bg-amber-500 text-[8px] font-semibold px-1 py-0.5 rounded text-stone-900 scale-90">#1</div>
                             </div>
 
                             <div class="w-full">
-                                <button class="w-full bg-amber-800 hover:bg-amber-900 text-amber-50 text-xs font-semibold py-1.5 rounded-lg transition shadow-md" onclick="handleAddClick('ai-01')">Add</button>
+                                <button class="w-full bg-amber-800 hover:bg-amber-900 text-amber-50 text-xs font-semibold py-1.5 rounded-lg transition shadow-md" onclick="handleAddClick('{{ $bestSellerMenu->id_menu }}')">Add</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- DAFTAR MENU DINAMIS -->
             @foreach($kategoris as $kategori)

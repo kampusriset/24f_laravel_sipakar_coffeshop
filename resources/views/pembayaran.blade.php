@@ -105,7 +105,7 @@
         <!-- Kamu pesan dari -->
         <div class="bg-stone-50 border-t border-b border-stone-100 px-4 py-4">
             <h3 class="font-bold text-stone-900">Kamu pesan dari</h3>
-            <p class="text-sm text-stone-600 mt-0.5">Aura Coffee - Kartasura</p>
+            <p class="text-sm text-stone-600 mt-0.5">Opoan Coffee</p>
         </div>
 
         <!-- Metode Pembayaran -->
