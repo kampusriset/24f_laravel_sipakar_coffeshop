@@ -95,7 +95,7 @@ class CashOrdersWidget extends BaseWidget
                     ->action(fn (Pesanan $r) => $r->update(['status' => 'diproses'])),
 
                 Action::make('selesai')
-                    ->label('🎉 Selesai')
+                    ->label('Selesai')
                     ->color('primary')
                     ->icon('heroicon-o-flag')
                     ->visible(fn (Pesanan $r) => $r->status === 'diproses')

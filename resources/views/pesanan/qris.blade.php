@@ -360,7 +360,7 @@
         <div class="px-4 pt-4">
             <button onclick="selesaiPesanan()" 
                 class="w-full bg-[#2c1d11] text-amber-50 py-3 rounded-xl font-bold hover:bg-[#3d2a1a] transition active:scale-95">
-                ✓ Selesai — Kembali ke Menu
+                Selesai - Kembali ke Menu
             </button>
         </div>
 

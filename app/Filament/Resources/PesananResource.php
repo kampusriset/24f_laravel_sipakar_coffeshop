@@ -188,7 +188,7 @@ class PesananResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'cash' => '💵 Cash di Kasir',
+                        'cash' => '💵 Cash',
                         'qris' => '📱 QRIS',
                         default => strtoupper($state),
                     }),
@@ -211,7 +211,7 @@ class PesananResource extends Resource
                 SelectFilter::make('metode_bayar')
                     ->label('Metode Bayar')
                     ->options([
-                        'cash' => '💵 Cash di Kasir',
+                        'cash' => '💵 Cash',
                         'qris' => '📱 QRIS',
                     ]),
             ])
