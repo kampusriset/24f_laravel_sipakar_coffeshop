@@ -33,13 +33,13 @@ class PesananResource extends Resource
      */
     public static function canAccess(): bool
     {
-        return auth()->check() && auth()->user()->role === 'kasir';
+        return auth()->check() && in_array(auth()->user()->role, ['admin', 'kasir']);
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            \Filament\Forms\Components\Section::make('Informasi Pelanggan')
+            \Filament\Schemas\Components\Section::make('Informasi Pelanggan')
                 ->schema([
                     \Filament\Forms\Components\TextInput::make('kode_pesanan')
                         ->label('Kode Pesanan')
@@ -61,7 +61,7 @@ class PesananResource extends Resource
                         ->placeholder('-'),
                 ])->columns(2),
 
-            \Filament\Forms\Components\Section::make('Rincian Menu & Add-On')
+            \Filament\Schemas\Components\Section::make('Rincian Menu & Add-On')
                 ->schema([
                     \Filament\Forms\Components\Repeater::make('details')
                         ->label('Daftar Minuman / Makanan')
@@ -103,11 +103,12 @@ class PesananResource extends Resource
                             \Filament\Forms\Components\TextInput::make('catatan')
                                 ->label('Catatan Koki')
                                 ->disabled()
-                                ->placeholder('-'),
-                        ])->columns(4)
+                                ->placeholder('-')
+                                ->columnSpan('full'),
+                        ])->columns(2)
                 ]),
 
-            \Filament\Forms\Components\Section::make('Total Transaksi')
+            \Filament\Schemas\Components\Section::make('Total Transaksi')
                 ->schema([
                     \Filament\Forms\Components\TextInput::make('subtotal')
                         ->label('Subtotal')
@@ -181,8 +182,16 @@ class PesananResource extends Resource
                 TextColumn::make('metode_bayar')
                     ->label('Bayar')
                     ->badge()
-                    ->color('warning')
-                    ->formatStateUsing(fn ($state) => strtoupper($state)),
+                    ->color(fn ($state) => match ($state) {
+                        'cash' => 'warning',
+                        'qris' => 'info',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'cash' => '💵 Cash di Kasir',
+                        'qris' => '📱 QRIS',
+                        default => strtoupper($state),
+                    }),
 
                 TextColumn::make('created_at')
                     ->label('Waktu')
@@ -198,13 +207,29 @@ class PesananResource extends Resource
                         'selesai'    => '✅ Selesai',
                         'dibatalkan' => '❌ Dibatalkan',
                     ]),
+
+                SelectFilter::make('metode_bayar')
+                    ->label('Metode Bayar')
+                    ->options([
+                        'cash' => '💵 Cash di Kasir',
+                        'qris' => '📱 QRIS',
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make()
                     ->label('Rincian')
                     ->modalHeading('Rincian Struk Pesanan')
                     ->icon('heroicon-o-eye')
-                    ->color('gray'),
+                    ->color('gray')
+                    ->extraModalFooterActions([
+                        \Filament\Actions\Action::make('terima_cash_modal')
+                            ->label('✅ Terima & Proses (Cash)')
+                            ->color('success')
+                            ->visible(fn (Pesanan $r) => $r->metode_bayar === 'cash' && $r->status === 'menunggu')
+                            ->requiresConfirmation()
+                            ->modalHeading('Terima pesanan cash ini?')
+                            ->action(fn (Pesanan $r) => $r->update(['status' => 'diproses'])),
+                    ]),
 
                 \Filament\Actions\Action::make('proses')
                     ->label('Proses')

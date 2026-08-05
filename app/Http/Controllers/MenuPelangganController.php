@@ -18,7 +18,7 @@ class MenuPelangganController extends Controller
         $bestSellerHariIni = DB::table('detail_pesanans')
             ->join('pesanans', 'detail_pesanans.pesanan_id', '=', 'pesanans.id')
             ->whereDate('pesanans.created_at', today())
-            ->whereIn('pesanans.status', ['selesai', 'diproses', 'pending'])
+            ->whereIn('pesanans.status', ['selesai', 'diproses', 'menunggu'])
             ->select('detail_pesanans.nama_menu', DB::raw('SUM(detail_pesanans.qty) as total_terjual'))
             ->groupBy('detail_pesanans.nama_menu')
             ->orderByDesc('total_terjual')

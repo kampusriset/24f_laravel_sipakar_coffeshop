@@ -285,7 +285,8 @@
             @endif
         </div>
 
-        @if($pesanan->status === 'menunggu')
+        {{-- ── Simulasi: hanya untuk QRIS, disembunyikan untuk Cash ── --}}
+        @if($pesanan->metode_bayar === 'qris' && $pesanan->status === 'menunggu')
         <div id="simulasi-wrapper" class="px-4 pt-4">
             <div class="border border-dashed border-amber-400 bg-amber-50/50 rounded-2xl p-4 text-center">
                 <p class="text-xs font-bold text-amber-800 mb-1">🛠️ Developer / Testing Mode</p>
@@ -298,12 +299,60 @@
         </div>
         @endif
 
-        {{-- ── Notifikasi Pembayaran Berhasil (Hidden by default) ── --}}
-        <div id="notif-sukses" class="hidden mx-4 mt-4 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-2xl p-4 flex items-center gap-3 slide-up">
+        {{-- ── Status Tracker khusus Cash ── --}}
+        @if($pesanan->metode_bayar === 'cash')
+        <div id="cash-status-tracker" class="mx-4 mt-4 rounded-2xl overflow-hidden border border-stone-200">
+            {{-- Step 1: Menunggu --}}
+            <div id="step-menunggu" class="px-4 py-3 flex items-center gap-3 {{ $pesanan->status !== 'menunggu' ? 'bg-stone-50 opacity-50' : 'bg-amber-50 border-l-4 border-amber-400' }}">
+                <div class="text-xl">⏳</div>
+                <div>
+                    <p class="text-xs font-bold text-stone-800">Menunggu Konfirmasi Kasir</p>
+                    <p class="text-[10px] text-stone-500">Pesananmu sudah masuk, kasir akan segera memproses</p>
+                </div>
+                @if($pesanan->status !== 'menunggu') <div class="ml-auto text-emerald-500">✓</div> @endif
+            </div>
+            {{-- Step 2: Diproses --}}
+            <div id="step-diproses" class="px-4 py-3 flex items-center gap-3 border-t border-stone-100 {{ $pesanan->status === 'menunggu' ? 'opacity-40' : ($pesanan->status === 'diproses' ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-stone-50 opacity-50') }}">
+                <div class="text-xl">🔄</div>
+                <div>
+                    <p class="text-xs font-bold text-stone-800">Kasir Memproses Pesanan</p>
+                    <p class="text-[10px] text-stone-500">Barista sedang menyiapkan pesananmu</p>
+                </div>
+                @if($pesanan->status === 'selesai') <div class="ml-auto text-emerald-500">✓</div> @endif
+            </div>
+            {{-- Step 3: Selesai --}}
+            <div id="step-selesai" class="px-4 py-3 flex items-center gap-3 border-t border-stone-100 {{ $pesanan->status === 'selesai' ? 'bg-emerald-50 border-l-4 border-emerald-400' : 'opacity-40' }}">
+                <div class="text-xl">✅</div>
+                <div>
+                    <p class="text-xs font-bold text-stone-800">Pesanan Siap Diambil!</p>
+                    <p class="text-[10px] text-stone-500">Lakukan pembayaran tunai & ambil pesananmu di kasir</p>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- ── Notifikasi status (generik, dipakai QRIS & Cash) ── --}}
+        <div id="notif-diproses" class="hidden mx-4 mt-4 bg-blue-50 border border-blue-200 text-blue-800 rounded-2xl p-4 flex items-center gap-3 slide-up">
+            <div class="text-2xl">🔄</div>
+            <div>
+                <p class="font-bold text-sm">Pesananmu Sedang Diproses!</p>
+                <p class="text-xs text-blue-700">Barista sedang menyiapkan pesananmu. Sebentar lagi siap!</p>
+            </div>
+        </div>
+
+        <div id="notif-sukses" class="hidden mx-4 mt-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl p-4 flex items-center gap-3 slide-up">
             <div class="text-2xl">🎉</div>
             <div>
-                <p class="font-bold text-sm">Pembayaran Berhasil!</p>
-                <p class="text-xs text-emerald-700">Pesanan Anda kini sedang diproses oleh Kasir.</p>
+                <p class="font-bold text-sm">{{ $pesanan->metode_bayar === 'cash' ? 'Pesanan Siap Diambil!' : 'Pembayaran Berhasil!' }}</p>
+                <p class="text-xs text-emerald-700">{{ $pesanan->metode_bayar === 'cash' ? 'Silakan ambil pesananmu di kasir dan lakukan pembayaran tunai.' : 'Pesanan Anda kini sedang diproses oleh Kasir.' }}</p>
+            </div>
+        </div>
+
+        <div id="notif-dibatalkan" class="hidden mx-4 mt-4 bg-red-50 border border-red-200 text-red-800 rounded-2xl p-4 flex items-center gap-3 slide-up">
+            <div class="text-2xl">❌</div>
+            <div>
+                <p class="font-bold text-sm">Pesanan Dibatalkan</p>
+                <p class="text-xs text-red-700">Pesananmu telah dibatalkan oleh kasir. Silakan hubungi kasir jika ada pertanyaan.</p>
             </div>
         </div>
 
@@ -320,36 +369,37 @@
 
 <script>
     const kodePesanan = "{{ $pesanan->kode_pesanan }}";
+    const metodeBayar = "{{ $pesanan->metode_bayar }}";
     let statusSekarang = "{{ $pesanan->status }}";
 
-    // ── Countdown Timer 5 menit ──────────────────────────
-    let totalSeconds = 300;
-    const countdownEl = document.getElementById('countdown');
+    // ── Countdown Timer 5 menit (hanya untuk QRIS) ──────────
+    if (metodeBayar === 'qris') {
+        let totalSeconds = 300;
+        const countdownEl = document.getElementById('countdown');
 
-    const timer = setInterval(() => {
-        totalSeconds--;
-        if (totalSeconds <= 0) {
-            clearInterval(timer);
-            if(countdownEl) {
-                countdownEl.textContent = 'Kedaluwarsa';
-                countdownEl.classList.add('text-red-500');
+        const timer = setInterval(() => {
+            totalSeconds--;
+            if (totalSeconds <= 0) {
+                clearInterval(timer);
+                if(countdownEl) {
+                    countdownEl.textContent = 'Kedaluwarsa';
+                    countdownEl.classList.add('text-red-500');
+                }
+                return;
             }
-            return;
-        }
-        const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-        const s = String(totalSeconds % 60).padStart(2, '0');
-        if(countdownEl) {
-            countdownEl.textContent = `${m}:${s}`;
-        }
-    }, 1000);
+            const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+            const s = String(totalSeconds % 60).padStart(2, '0');
+            if(countdownEl) countdownEl.textContent = `${m}:${s}`;
+        }, 1000);
+    }
 
-    // ── Bersihkan cart & kembali ke menu ────────────────
+    // ── Bersihkan cart & kembali ke menu ────────────────────
     function selesaiPesanan() {
         localStorage.removeItem('aura_cart');
         window.location.href = '/';
     }
 
-    // ── Simulasi Bayar Sukses (AJAX POST) ────────────────
+    // ── Simulasi Bayar Sukses — HANYA untuk QRIS ────────────
     function simulasiPembayaran() {
         const btn = document.getElementById('btn-simulasi');
         btn.disabled = true;
@@ -365,15 +415,9 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Sembunyikan pembungkus simulasi
                 const wrapper = document.getElementById('simulasi-wrapper');
                 if(wrapper) wrapper.classList.add('hidden');
-                
-                // Tampilkan notifikasi sukses
-                document.getElementById('notif-sukses').classList.remove('hidden');
-                
-                // Update badge status di atas secara instan
-                updateBadge('diproses');
+                applyStatusChange('diproses');
             } else {
                 alert(data.message);
                 btn.disabled = false;
@@ -388,9 +432,8 @@
         });
     }
 
-    // ── Polling Status Pesanan (Mengecek status di database setiap 3 detik) ──
+    // ── Polling Status (setiap 3 detik) ─────────────────────
     const pollingInterval = setInterval(() => {
-        // Hentikan polling jika status sudah selesai atau batal
         if (statusSekarang === 'selesai' || statusSekarang === 'dibatalkan') {
             clearInterval(pollingInterval);
             return;
@@ -401,26 +444,81 @@
         .then(data => {
             if (data.status && data.status !== statusSekarang) {
                 statusSekarang = data.status;
-                updateBadge(statusSekarang);
-
-                // Jika berubah dari menunggu ke diproses
-                if (statusSekarang === 'diproses') {
-                    const wrapper = document.getElementById('simulasi-wrapper');
-                    if(wrapper) wrapper.classList.add('hidden');
-                    document.getElementById('notif-sukses').classList.remove('hidden');
-                }
+                applyStatusChange(statusSekarang);
             }
         })
         .catch(e => console.error('Gagal polling status:', e));
     }, 3000);
 
-    // Helper untuk mengubah tampilan badge status di atas
+    // ── Handler utama perubahan status ─────────────────────
+    function applyStatusChange(status) {
+        updateBadge(status);
+
+        if (metodeBayar === 'cash') {
+            updateCashTracker(status);
+            if (status === 'diproses') {
+                document.getElementById('notif-diproses')?.classList.remove('hidden');
+            }
+            if (status === 'selesai') {
+                document.getElementById('notif-diproses')?.classList.add('hidden');
+                document.getElementById('notif-sukses')?.classList.remove('hidden');
+                document.querySelector('.max-w-md')?.classList.add('ring-2', 'ring-emerald-300');
+            }
+            if (status === 'dibatalkan') {
+                document.getElementById('notif-dibatalkan')?.classList.remove('hidden');
+            }
+        } else {
+            // QRIS flow
+            if (status === 'diproses') {
+                const wrapper = document.getElementById('simulasi-wrapper');
+                if(wrapper) wrapper.classList.add('hidden');
+                document.getElementById('notif-diproses')?.classList.remove('hidden');
+            }
+            if (status === 'selesai') {
+                document.getElementById('notif-diproses')?.classList.add('hidden');
+                document.getElementById('notif-sukses')?.classList.remove('hidden');
+            }
+        }
+    }
+
+    // ── Update Cash Step Tracker ────────────────────────────
+    function updateCashTracker(status) {
+        const stepMenunggu = document.getElementById('step-menunggu');
+        const stepDiproses = document.getElementById('step-diproses');
+        const stepSelesai  = document.getElementById('step-selesai');
+        if (!stepMenunggu) return;
+
+        // Reset semua ke opacity-40
+        [stepMenunggu, stepDiproses, stepSelesai].forEach(el => {
+            el.classList.remove('bg-amber-50','bg-blue-50','bg-emerald-50','bg-stone-50','border-l-4','border-amber-400','border-blue-400','border-emerald-400','opacity-40');
+            el.classList.add('opacity-40');
+        });
+
+        if (status === 'menunggu') {
+            stepMenunggu.classList.remove('opacity-40');
+            stepMenunggu.classList.add('bg-amber-50','border-l-4','border-amber-400');
+        } else if (status === 'diproses') {
+            stepMenunggu.classList.remove('opacity-40');
+            stepMenunggu.classList.add('bg-stone-50');
+            stepDiproses.classList.remove('opacity-40');
+            stepDiproses.classList.add('bg-blue-50','border-l-4','border-blue-400');
+        } else if (status === 'selesai') {
+            stepMenunggu.classList.remove('opacity-40');
+            stepMenunggu.classList.add('bg-stone-50');
+            stepDiproses.classList.remove('opacity-40');
+            stepDiproses.classList.add('bg-stone-50');
+            stepSelesai.classList.remove('opacity-40');
+            stepSelesai.classList.add('bg-emerald-50','border-l-4','border-emerald-400');
+        }
+    }
+
+    // ── Update Badge di Header ──────────────────────────────
     function updateBadge(status) {
         const badgeSpan = document.querySelector('span.rounded-full');
         if (!badgeSpan) return;
 
         badgeSpan.className = 'text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ';
-        
+
         if (status === 'menunggu') {
             badgeSpan.className += 'bg-amber-100 text-amber-700';
             badgeSpan.textContent = '⏳ Menunggu';
@@ -439,3 +537,5 @@
 
 </body>
 </html>
+
+
