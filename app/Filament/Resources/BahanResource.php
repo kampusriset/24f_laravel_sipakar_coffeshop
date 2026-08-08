@@ -36,16 +36,31 @@ class BahanResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Data Bahan')
-                ->description('Tambahkan jenis bahan yang digunakan dalam pembuatan menu.')
+            Section::make('Data & Stok Bahan')
+                ->description('Tambahkan jenis bahan baku dan kelola ketersediaan stok fisik di gudang/kasir.')
                 ->schema([
                     TextInput::make('nama_bahan')
                         ->label('Nama Bahan')
                         ->placeholder('Contoh: Biji Kopi Arabika, Susu Segar, Gula Aren')
                         ->required()
                         ->maxLength(100),
+
+                    TextInput::make('stok')
+                        ->label('Jumlah Stok Tersedia')
+                        ->numeric()
+                        ->minValue(0)
+                        ->default(100)
+                        ->required()
+                        ->helperText('Stok akan berkurang otomatis saat pelanggan melakukan pemesanan.'),
+
+                    TextInput::make('satuan')
+                        ->label('Satuan')
+                        ->default('porsi')
+                        ->placeholder('Contoh: porsi, shot, ml, gram')
+                        ->required()
+                        ->maxLength(50),
                 ])
-                ->columns(1),
+                ->columns(3),
         ]);
     }
 
@@ -59,11 +74,23 @@ class BahanResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('stok')
+                    ->label('Stok Tersedia')
+                    ->numeric()
+                    ->badge()
+                    ->color(fn (int $state): string => match (true) {
+                        $state <= 0 => 'danger',
+                        $state <= 20 => 'warning',
+                        default => 'success',
+                    })
+                    ->formatStateUsing(fn ($record) => number_format($record->stok, 0, ',', '.') . ' ' . $record->satuan)
+                    ->sortable(),
+
                 TextColumn::make('menus_count')
                     ->label('Dipakai di Menu')
                     ->counts('menus')
                     ->badge()
-                    ->color('warning'),
+                    ->color('info'),
 
                 TextColumn::make('created_at')
                     ->label('Ditambahkan')

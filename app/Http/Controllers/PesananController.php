@@ -29,6 +29,24 @@ class PesananController extends Controller
             return back()->withErrors(['cart' => 'Keranjang tidak boleh kosong.']);
         }
 
+        // ── Pengecekan Ketersediaan Stok Bahan Baku ───────────────────────
+        foreach ($cart as $item) {
+            $menuName = $item['nama'] ?? '';
+            $menuQty  = (int)($item['qty'] ?? 1);
+
+            $menuObj = \App\Models\Menu::with('bahans')->where('nama_menu', $menuName)->first();
+            if ($menuObj) {
+                foreach ($menuObj->bahans as $bahan) {
+                    $needed = ($bahan->pivot->jumlah_dibutuhkan ?? 1) * $menuQty;
+                    if ($bahan->stok < $needed) {
+                        return back()->withErrors([
+                            'cart' => "Maaf, stok bahan baku '{$bahan->nama_bahan}' tidak mencukupi untuk memesan '{$menuName}'. (Sisa stok: {$bahan->stok} {$bahan->satuan})."
+                        ]);
+                    }
+                }
+            }
+        }
+
         // Hitung total
         $subtotal = 0;
         foreach ($cart as $item) {
@@ -40,7 +58,6 @@ class PesananController extends Controller
         $diskon       = 0;
         $persenDiskon = 0;
         if (auth()->check() && auth()->user()->isUser()) {
-            // 30% chance mendapat diskon, dengan nilai 10%, 15%, atau 20%
             if (rand(1, 10) <= 3) {
                 $persenDiskon = collect([10, 15, 20])->random();
                 $diskon       = (int)round($subtotal * $persenDiskon / 100);
@@ -66,12 +83,15 @@ class PesananController extends Controller
             ]);
 
             foreach ($cart as $item) {
+                $menuName = $item['nama'] ?? '';
+                $menuQty  = (int)($item['qty'] ?? 1);
+
                 DetailPesanan::create([
                     'pesanan_id'   => $pesanan->id,
-                    'nama_menu'    => $item['nama'],
+                    'nama_menu'    => $menuName,
                     'harga_satuan' => (int)($item['finalPrice'] ?? 0),
-                    'qty'          => (int)($item['qty'] ?? 1),
-                    'subtotal'     => (int)($item['finalPrice'] ?? 0) * (int)($item['qty'] ?? 1),
+                    'qty'          => $menuQty,
+                    'subtotal'     => (int)($item['finalPrice'] ?? 0) * $menuQty,
                     'suhu'         => $item['temp']   ?? null,
                     'sugar_level'  => $item['sugar']  ?? null,
                     'ukuran'       => $item['size']   ?? null,
@@ -79,6 +99,15 @@ class PesananController extends Controller
                     'topping'      => !empty($item['toppings']) ? implode(', ', $item['toppings']) : null,
                     'catatan'      => $item['notes']  ?? null,
                 ]);
+
+                // Kurangi stok bahan baku yang terikat dengan menu ini
+                $menuObj = \App\Models\Menu::with('bahans')->where('nama_menu', $menuName)->first();
+                if ($menuObj) {
+                    foreach ($menuObj->bahans as $bahan) {
+                        $needed = ($bahan->pivot->jumlah_dibutuhkan ?? 1) * $menuQty;
+                        $bahan->decrement('stok', $needed);
+                    }
+                }
             }
         });
 

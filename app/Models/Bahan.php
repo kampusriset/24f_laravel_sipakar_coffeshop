@@ -11,10 +11,14 @@ class Bahan extends Model
 
     protected $fillable = [
         'nama_bahan',
+        'stok',
+        'satuan',
     ];
 
     public function menus()
     {
-        return $this->belongsToMany(Menu::class, 'menu_bahan', 'id_bahan', 'id_menu');
+        return $this->belongsToMany(Menu::class, 'menu_bahan', 'id_bahan', 'id_menu')
+                    ->withPivot('jumlah_dibutuhkan')
+                    ->withTimestamps();
     }
 }
