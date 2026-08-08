@@ -247,8 +247,10 @@
         <!-- ===== KOLOM TENGAH (main content) ===== -->
         <div id="main-col" class="flex flex-col flex-1 min-w-0">
 
+        <!-- STICKY HEADER & TABS BAR CONTAINER -->
+        <div class="sticky top-0 z-40 w-full flex flex-col bg-white">
         <!-- HEADER UTAMA -->
-        <header id="main-header" class="p-5 border-b border-stone-100 bg-white sticky top-0 z-40">
+        <header id="main-header" class="p-5 border-b border-stone-100 relative">
             <div class="flex justify-between items-center mb-1">
                 <h1 class="text-xl font-serif font-bold tracking-tight text-stone-900">Opoan Coffee</h1>
 
@@ -320,7 +322,7 @@
         </header>
 
         <!-- KATEGORI TABS STICKY NAVIGATION (hanya mobile/tablet) -->
-        <div id="sticky-tabs-bar" class="px-5 py-3.5 sticky top-[69px] bg-white z-30 border-b border-stone-100 flex items-center space-x-3">
+        <div id="sticky-tabs-bar" class="px-5 py-3.5 border-b border-stone-100 flex items-center space-x-3 relative">
             <button onclick="toggleCategoryModal(true)" class="bg-[#2c1d11] text-amber-50 text-xs font-semibold tracking-wide px-3.5 py-2 rounded-lg flex items-center space-x-1 shrink-0 transition hover:bg-[#3d2a1a]">
                 <span>MENU</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
@@ -336,6 +338,7 @@
                 </div>
             </div>
         </div>
+        </div> <!-- END STICKY WRAPPER -->
 
         <!-- AREA KONTEN DAFTAR MENU -->
         <main class="flex-1 bg-white">
