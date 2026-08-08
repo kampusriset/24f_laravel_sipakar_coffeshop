@@ -144,4 +144,4 @@ Flowchart ini menjelaskan bagaimana admin mengelola bisnis dan memprediksi kebut
 ---
 
 ## 📝 Lisensi
-Proyek ini dibuat untuk keperluan tugas akademik dan pengembangan sistem informasi bisnis Coffee Shop. Open-source di bawah lisensi [MIT License](LICENSE).
+Proyek ini dibuat untuk keperluan tugas akademik dan pengembangan sistem informasi bisnis Coffee Shop. Lisensi resmi MIT tersedia pada berkas [LICENSE](LICENSE).
