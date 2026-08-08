@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Role: 'admin' atau 'user'
-            $table->enum('role', ['admin', 'user'])->default('user')->after('email');
-            // Google ID untuk Social Login (fitur berikutnya)
+            // Role: 'admin', 'kasir', atau 'user'
+            $table->enum('role', ['admin', 'kasir', 'user'])->default('user')->after('email');
+            // Google ID untuk Social Login
             $table->string('google_id')->nullable()->after('remember_token');
             // Avatar dari Google
             $table->string('avatar')->nullable()->after('google_id');
