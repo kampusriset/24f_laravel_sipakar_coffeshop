@@ -23,6 +23,29 @@ class Menu extends Model
 
     public function bahans()
     {
-        return $this->belongsToMany(Bahan::class, 'menu_bahan', 'id_menu', 'id_bahan');
+        return $this->belongsToMany(Bahan::class, 'menu_bahan', 'id_menu', 'id_bahan')
+                    ->withPivot('jumlah_dibutuhkan')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Cek apakah stok semua bahan baku menu ini mencukupi untuk minimal 1 porsi.
+     */
+    public function isTersedia(): bool
+    {
+        if ($this->relationLoaded('bahans') ? $this->bahans->isEmpty() : $this->bahans()->count() === 0) {
+            return true;
+        }
+
+        $bahans = $this->relationLoaded('bahans') ? $this->bahans : $this->bahans()->get();
+
+        foreach ($bahans as $bahan) {
+            $needed = $bahan->pivot->jumlah_dibutuhkan ?? 1;
+            if ($bahan->stok < $needed) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

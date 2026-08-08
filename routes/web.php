@@ -66,6 +66,16 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| 3b. Laporan Penjualan Export (Admin Only)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->prefix('laporan')->name('laporan.')->group(function () {
+    Route::get('/csv', [\App\Http\Controllers\LaporanController::class, 'exportCsv'])->name('csv');
+    Route::get('/pdf', [\App\Http\Controllers\LaporanController::class, 'exportPdf'])->name('pdf');
+});
+
+/*
+|--------------------------------------------------------------------------
 | 4. Auth Routes Breeze (login, register, logout, password reset)
 |--------------------------------------------------------------------------
 */

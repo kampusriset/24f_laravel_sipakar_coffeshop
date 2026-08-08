@@ -117,12 +117,18 @@
                             </div>
                         </div>
                     @else
-                        {{-- Guest: tampilkan tombol Sign In --}}
-                        <a href="{{ route('login') }}"
-                           class="flex items-center space-x-1.5 bg-[#2c1d11] text-amber-50 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#3d2a1a] transition active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                            <span>Sign In</span>
-                        </a>
+                        {{-- Guest: tampilkan tombol Masuk & Daftar --}}
+                        <div class="flex items-center space-x-1">
+                            <a href="{{ route('login') }}"
+                               class="text-xs font-semibold text-stone-600 hover:text-stone-900 px-2 py-1 transition">
+                                Masuk
+                            </a>
+                            <a href="{{ route('register') }}"
+                               class="flex items-center space-x-1 bg-[#2c1d11] text-amber-50 text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#3d2a1a] transition active:scale-95 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                                <span>Daftar</span>
+                            </a>
+                        </div>
                     @endauth
                 </div>
             </div>
@@ -199,11 +205,13 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0114 0z"/></svg>
                                     </div>
                                 @endif
-                                <div class="absolute top-1 left-1 bg-amber-500 text-[8px] font-semibold px-1 py-0.5 rounded text-stone-900 scale-90">#1</div>
                             </div>
-
                             <div class="w-full">
-                                <button class="w-full bg-amber-800 hover:bg-amber-900 text-amber-50 text-xs font-semibold py-1.5 rounded-lg transition shadow-md" onclick="handleAddClick('{{ $bestSellerMenu->id_menu }}')">Add</button>
+                                @if($bestSellerMenu->isTersedia())
+                                    <button class="w-full bg-amber-800 hover:bg-amber-900 text-amber-50 text-xs font-semibold py-1.5 rounded-lg transition shadow-md" onclick="handleAddClick('{{ $bestSellerMenu->id_menu }}')">Add</button>
+                                @else
+                                    <button disabled class="w-full bg-stone-700 text-stone-400 text-xs font-semibold py-1.5 rounded-lg cursor-not-allowed">Stok Habis</button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -218,7 +226,8 @@
                 <div class="grid grid-cols-2 gap-4">
 
                     @foreach($kategori->menus as $menu)
-                    <div class="bg-stone-50/60 rounded-2xl p-3.5 border border-stone-100 flex flex-col justify-between menu-item"
+                    @php $isAvailable = $menu->isTersedia(); @endphp
+                    <div class="bg-stone-50/60 rounded-2xl p-3.5 border border-stone-100 flex flex-col justify-between menu-item {{ !$isAvailable ? 'opacity-70' : '' }}"
                          data-id="{{ $menu->id_menu }}"
                          data-nama="{{ $menu->nama_menu }}"
                          data-harga="{{ $menu->harga }}"
@@ -226,7 +235,7 @@
                          data-kategori="{{ $kategori->nama_kategori }}">
                         <div>
                             <!-- Dengan pemanggilan Storage::url -->
-                            <div class="w-full aspect-square bg-stone-100 border border-stone-200/60 rounded-xl overflow-hidden mb-3 flex items-center justify-center">
+                            <div class="w-full aspect-square bg-stone-100 border border-stone-200/60 rounded-xl overflow-hidden mb-3 flex items-center justify-center relative">
                                 @if($menu->gambar)
                                     @if(file_exists(public_path('menu-image/' . $menu->gambar)))
                                         <img src="{{ asset('menu-image/' . $menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="w-full h-full object-cover">
@@ -234,7 +243,10 @@
                                         <img src="{{ Storage::url($menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="w-full h-full object-cover">
                                     @endif
                                 @else
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0114 0z" /></svg>
+                                @endif
+                                @if(!$isAvailable)
+                                    <span class="absolute top-2 left-2 bg-red-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow">Stok Habis</span>
                                 @endif
                             </div>
                               <h3 class="text-sm font-semibold text-stone-900 tracking-wide">{{ $menu->nama_menu }}</h3>
@@ -242,7 +254,11 @@
                         </div>
                         <div class="mt-4">
                             <span class="text-sm font-bold text-stone-900 block mb-2.5">Rp{{ number_format($menu->harga, 0, ',', '.') }}</span>
-                            <button class="w-full border border-stone-800 text-stone-800 hover:bg-stone-900 hover:text-white text-xs font-semibold py-1.5 rounded-lg transition" onclick="handleAddClick('{{ $menu->id_menu }}')">Add</button>
+                            @if($isAvailable)
+                                <button class="w-full border border-stone-800 text-stone-800 hover:bg-stone-900 hover:text-white text-xs font-semibold py-1.5 rounded-lg transition" onclick="handleAddClick('{{ $menu->id_menu }}')">Add</button>
+                            @else
+                                <button disabled class="w-full border border-stone-200 bg-stone-100 text-stone-400 cursor-not-allowed text-xs font-semibold py-1.5 rounded-lg">Stok Habis</button>
+                            @endif
                         </div>
                     </div>
                     @endforeach
