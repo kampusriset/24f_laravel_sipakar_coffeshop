@@ -29,7 +29,7 @@
             to   { stroke-dashoffset: 440; }
         }
         #timer-circle {
-            animation: countdown 300s linear forwards; /* 5 menit */
+            animation: countdown 300s linear forwards;
         }
 
         @keyframes slideUp {
@@ -37,13 +37,58 @@
             to   { transform: translateY(0); opacity: 1; }
         }
         .slide-up { animation: slideUp 0.4s ease both; }
+
+        /* ===== DESKTOP LAYOUT ===== */
+        @media (min-width: 1024px) {
+            body { background-color: #f5f3ee; }
+
+            #qris-wrapper {
+                max-width: 1100px;
+                margin: 0 auto;
+                min-height: 100vh;
+                background: white;
+                box-shadow: 0 0 60px rgba(0,0,0,0.08);
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Body jadi 2 kolom */
+            #qris-body {
+                display: grid;
+                grid-template-columns: 1fr 380px;
+                gap: 0;
+                flex: 1;
+                align-items: start;
+            }
+
+            /* Kolom kiri: QR/Cash + instruksi + tracker (scrollable) */
+            #qris-left {
+                padding: 2rem;
+                border-right: 1px solid #e7e5e4;
+                overflow-y: auto;
+            }
+
+            /* Kolom kanan: ringkasan + info pemesan + tombol (sticky) */
+            #qris-right {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+                background: #ffffff;
+                border-left: 1px solid #e7e5e4;
+                display: flex;
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 1rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-stone-100 antialiased text-stone-800">
 
-<div class="max-w-md mx-auto bg-white min-h-screen shadow-xl flex flex-col">
+<div id="qris-wrapper" class="max-w-md md:max-w-2xl lg:max-w-none mx-auto bg-white min-h-screen shadow-xl flex flex-col">
 
-    {{-- ── Header ─────────────────────────────────── --}}
+    {{-- ── Header ──────────────────────────────────── --}}
     <div class="p-4 border-b border-stone-100 flex items-center justify-between bg-white sticky top-0 z-10">
         <div class="flex items-center gap-3">
             <a href="{{ route('coffeeshop.index') }}" class="text-stone-500 hover:text-stone-800 transition">
@@ -71,7 +116,12 @@
         </span>
     </div>
 
-    <div class="flex-1 overflow-y-auto pb-6">
+    {{-- ── BODY: single col mobile, 2-col desktop ── --}}
+    <div id="qris-body" class="flex flex-col lg:block flex-1">
+
+    {{-- KOLOM KIRI: payment info + instruksi + tracker --}}
+    <div id="qris-left" class="flex-1">
+    <div class="pb-6">
 
         {{-- ── Diskon Random (hanya muncul jika user login & dapat diskon) ── --}}
         @if($pesanan->persen_diskon > 0)
@@ -188,14 +238,20 @@
             </div>
         @endif
 
-        {{-- ── Ringkasan Pesanan ──────────────────────────────── --}}
-        <div class="px-4 pt-4 space-y-3">
+    </div>{{-- end qris-left inner --}}
+    </div>{{-- end qris-left --}}
+
+    {{-- KOLOM KANAN: ringkasan + info pemesan + notifikasi + tombol --}}
+    <div id="qris-right">
+
+        {{-- ── Ringkasan Pesanan ── --}}
+        <div class="space-y-2">
             <h2 class="font-bold text-stone-800 text-sm">Ringkasan Pesanan</h2>
 
-            <div class="border border-stone-100 rounded-2xl overflow-hidden shadow-sm">
+            <div class="border border-stone-200 rounded-2xl overflow-hidden shadow-sm bg-white">
                 {{-- Items --}}
                 @foreach($pesanan->details as $item)
-                <div class="px-4 py-3 {{ !$loop->last ? 'border-b border-stone-100' : '' }} flex justify-between items-start">
+                <div class="px-4 py-3 bg-white {{ !$loop->last ? 'border-b border-stone-100' : '' }} flex justify-between items-start">
                     <div class="flex-1">
                         <p class="font-semibold text-sm text-stone-900">{{ $item->nama_menu }}</p>
                         @if($item->addOnSummary() !== '-')
@@ -213,7 +269,7 @@
                 @endforeach
 
                 {{-- Breakdown harga --}}
-                <div class="bg-stone-50 px-4 py-3 space-y-1.5">
+                <div class="bg-stone-50 px-4 py-3 space-y-1.5 border-t border-stone-100">
                     <div class="flex justify-between text-xs text-stone-500">
                         <span>Subtotal</span>
                         <span class="font-medium text-stone-700">Rp{{ number_format($pesanan->subtotal, 0, ',', '.') }}</span>
@@ -236,54 +292,56 @@
             </div>
         </div>
 
-        {{-- ── Info Pemesan ──────────────────────────────────── --}}
-        <div class="px-4 pt-3">
-            <div class="bg-stone-50 border border-stone-100 rounded-2xl px-4 py-3 space-y-1.5">
-                <p class="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Info Pemesan</p>
-                <div class="flex justify-between text-xs">
-                    <span class="text-stone-500">Nama</span>
-                    <span class="font-semibold text-stone-800">{{ $pesanan->nama_pelanggan }}</span>
-                </div>
-                @if($pesanan->nomor_meja)
-                <div class="flex justify-between text-xs">
-                    <span class="text-stone-500">No. Meja</span>
-                    <span class="font-semibold text-stone-800">{{ $pesanan->nomor_meja }}</span>
-                </div>
-                @endif
-                @if($pesanan->nomor_hp)
-                <div class="flex justify-between text-xs">
-                    <span class="text-stone-500">No. HP</span>
-                    <span class="font-semibold text-stone-800">{{ $pesanan->nomor_hp }}</span>
-                </div>
-                @endif
+        {{-- ── Info Pemesan ── --}}
+        <div class="bg-white border border-stone-200 rounded-2xl px-4 py-3 space-y-1.5">
+            <p class="text-[10px] uppercase tracking-widest text-stone-400 font-semibold">Info Pemesan</p>
+            <div class="flex justify-between text-xs">
+                <span class="text-stone-500">Nama</span>
+                <span class="font-semibold text-stone-800">{{ $pesanan->nama_pelanggan }}</span>
             </div>
-        </div>
-
-        {{-- ── Instruksi berdasarkan metode --}}
-        <div class="px-4 pt-4">
-            @if($pesanan->metode_bayar === 'cash')
-            <div class="bg-stone-50 border border-stone-200 rounded-2xl p-4">
-                <p class="text-xs font-bold text-stone-700 mb-2">📋 Langkah Selanjutnya:</p>
-                <ol class="text-xs text-stone-600 space-y-1 list-decimal list-inside">
-                    <li>Tunggu antrian pesananmu dipersiapkan</li>
-                    <li>Datang ke kasir dengan menunjukkan kode pesanan</li>
-                    <li>Lakukan pembayaran tunai sebesar <strong>Rp{{ number_format($pesanan->total_akhir, 0, ',', '.') }}</strong></li>
-                    <li>Ambil pesananmu setelah kasir konfirmasi</li>
-                </ol>
+            @if($pesanan->nomor_meja)
+            <div class="flex justify-between text-xs">
+                <span class="text-stone-500">No. Meja</span>
+                <span class="font-semibold text-stone-800">{{ $pesanan->nomor_meja }}</span>
             </div>
-            @else
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                <p class="text-xs font-bold text-amber-800 mb-2">📋 Cara Bayar:</p>
-                <ol class="text-xs text-amber-700 space-y-1 list-decimal list-inside">
-                    <li>Buka aplikasi e-wallet (GoPay, OVO, Dana, dll)</li>
-                    <li>Pilih menu "Scan QR" atau "Bayar"</li>
-                    <li>Arahkan kamera ke QR Code di atas</li>
-                    <li>Konfirmasi jumlah: <strong>Rp{{ number_format($pesanan->total_akhir, 0, ',', '.') }}</strong></li>
-                    <li>Tunjukkan bukti bayar ke kasir</li>
-                </ol>
+            @endif
+            @if($pesanan->nomor_hp)
+            <div class="flex justify-between text-xs">
+                <span class="text-stone-500">No. HP</span>
+                <span class="font-semibold text-stone-800">{{ $pesanan->nomor_hp }}</span>
             </div>
             @endif
         </div>
+
+
+        {{-- ── Instruksi berdasarkan metode ── --}}
+        @if($pesanan->metode_bayar === 'cash')
+        <div class="bg-white border border-stone-200 rounded-2xl p-4">
+            <p class="text-xs font-bold text-stone-700 mb-2">📋 Langkah Selanjutnya:</p>
+            <ol class="text-xs text-stone-600 space-y-1 list-decimal list-inside">
+                <li>Tunggu antrian pesananmu dipersiapkan</li>
+                <li>Datang ke kasir dengan menunjukkan kode pesanan</li>
+                <li>Lakukan pembayaran tunai sebesar <strong>Rp{{ number_format($pesanan->total_akhir, 0, ',', '.') }}</strong></li>
+                @if($pesanan->nomor_meja)
+                    <li>Pesananmu akan diantar ke <strong>Meja {{ $pesanan->nomor_meja }}</strong> oleh server kami</li>
+                @else
+                    <li>Ambil pesananmu di kasir setelah kasir konfirmasi (Takeaway)</li>
+                @endif
+            </ol>
+        </div>
+        @else
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+            <p class="text-xs font-bold text-amber-800 mb-2">📋 Cara Bayar:</p>
+            <ol class="text-xs text-amber-700 space-y-1 list-decimal list-inside">
+                <li>Buka aplikasi e-wallet (GoPay, OVO, Dana, dll)</li>
+                <li>Pilih menu "Scan QR" atau "Bayar"</li>
+                <li>Arahkan kamera ke QR Code di atas</li>
+                <li>Konfirmasi jumlah: <strong>Rp{{ number_format($pesanan->total_akhir, 0, ',', '.') }}</strong></li>
+                <li>Tunjukkan bukti bayar ke kasir</li>
+            </ol>
+        </div>
+        @endif
+
 
         {{-- ── Simulasi: hanya untuk QRIS, disembunyikan untuk Cash ── --}}
         @if($pesanan->metode_bayar === 'qris' && $pesanan->status === 'menunggu')
@@ -324,8 +382,52 @@
             <div id="step-selesai" class="px-4 py-3 flex items-center gap-3 border-t border-stone-100 {{ $pesanan->status === 'selesai' ? 'bg-emerald-50 border-l-4 border-emerald-400' : 'opacity-40' }}">
                 <div class="text-xl">✅</div>
                 <div>
-                    <p class="text-xs font-bold text-stone-800">Pesanan Siap Diambil!</p>
-                    <p class="text-[10px] text-stone-500">Lakukan pembayaran tunai & ambil pesananmu di kasir</p>
+                    <p class="text-xs font-bold text-stone-800">Pesanan Siap!</p>
+                    <p class="text-[10px] text-stone-500">
+                        @if($pesanan->nomor_meja)
+                            Pesananmu akan segera diantar ke <strong>Meja {{ $pesanan->nomor_meja }}</strong>
+                        @else
+                            Silakan ambil pesananmu di kasir (Takeaway)
+                        @endif
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- ── Status Tracker untuk QRIS ── --}}
+        @if($pesanan->metode_bayar === 'qris')
+        <div id="qris-status-tracker" class="mx-4 mt-4 rounded-2xl overflow-hidden border border-stone-200">
+            {{-- Step 1: Menunggu Pembayaran --}}
+            <div id="qris-step-menunggu" class="px-4 py-3 flex items-center gap-3 {{ $pesanan->status !== 'menunggu' ? 'bg-stone-50 opacity-50' : 'bg-amber-50 border-l-4 border-amber-400' }}">
+                <div class="text-xl">⏳</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-stone-800">Menunggu Pembayaran QRIS</p>
+                    <p class="text-[10px] text-stone-500">Scan QR dan selesaikan pembayaran via e-wallet</p>
+                </div>
+                @if($pesanan->status !== 'menunggu') <div class="ml-auto text-emerald-500 shrink-0">✓</div> @endif
+            </div>
+            {{-- Step 2: Pembayaran Dikonfirmasi --}}
+            <div id="qris-step-diproses" class="px-4 py-3 flex items-center gap-3 border-t border-stone-100 {{ $pesanan->status === 'menunggu' ? 'opacity-40' : ($pesanan->status === 'diproses' ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-stone-50') }}">
+                <div class="text-xl">✅</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-stone-800">Pembayaran Dikonfirmasi</p>
+                    <p class="text-[10px] text-stone-500">Pesananmu sedang diproses oleh barista</p>
+                </div>
+                @if($pesanan->status === 'selesai') <div class="ml-auto text-emerald-500 shrink-0">✓</div> @endif
+            </div>
+            {{-- Step 3: Selesai --}}
+            <div id="qris-step-selesai" class="px-4 py-3 flex items-center gap-3 border-t border-stone-100 {{ $pesanan->status === 'selesai' ? 'bg-emerald-50 border-l-4 border-emerald-400' : 'opacity-40' }}">
+                <div class="text-xl">🎉</div>
+                <div class="flex-1">
+                    <p class="text-xs font-bold text-stone-800">Pesanan Siap!</p>
+                    <p class="text-[10px] text-stone-500">
+                        @if($pesanan->nomor_meja)
+                            Pesananmu akan segera diantar ke <strong>Meja {{ $pesanan->nomor_meja }}</strong>
+                        @else
+                            Silakan ambil pesananmu di kasir (Takeaway)
+                        @endif
+                    </p>
                 </div>
             </div>
         </div>
@@ -343,8 +445,14 @@
         <div id="notif-sukses" class="hidden mx-4 mt-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl p-4 flex items-center gap-3 slide-up">
             <div class="text-2xl">🎉</div>
             <div>
-                <p class="font-bold text-sm">{{ $pesanan->metode_bayar === 'cash' ? 'Pesanan Siap Diambil!' : 'Pembayaran Berhasil!' }}</p>
-                <p class="text-xs text-emerald-700">{{ $pesanan->metode_bayar === 'cash' ? 'Silakan ambil pesananmu di kasir dan lakukan pembayaran tunai.' : 'Pesanan Anda kini sedang diproses oleh Kasir.' }}</p>
+                <p class="font-bold text-sm">Pesanan Siap!</p>
+                <p class="text-xs text-emerald-700">
+                    @if($pesanan->nomor_meja)
+                        Pesananmu akan segera diantar ke <strong>Meja {{ $pesanan->nomor_meja }}</strong> oleh server kami.
+                    @else
+                        Silakan ambil pesananmu di kasir (Takeaway).
+                    @endif
+                </p>
             </div>
         </div>
 
@@ -357,15 +465,16 @@
         </div>
 
         {{-- ── Tombol Selesai / Kembali ke Menu ── --}}
-        <div class="px-4 pt-4">
-            <button onclick="selesaiPesanan()" 
+        <div class="px-4 pt-4 pb-6">
+            <button onclick="selesaiPesanan()"
                 class="w-full bg-[#2c1d11] text-amber-50 py-3 rounded-xl font-bold hover:bg-[#3d2a1a] transition active:scale-95">
                 Selesai - Kembali ke Menu
             </button>
         </div>
 
-    </div>{{-- end flex-1 --}}
-</div>
+    </div>{{-- end qris-right --}}
+    </div>{{-- end qris-body --}}
+</div>{{-- end qris-wrapper --}}
 
 <script>
     const kodePesanan = "{{ $pesanan->kode_pesanan }}";
@@ -473,10 +582,18 @@
                 const wrapper = document.getElementById('simulasi-wrapper');
                 if(wrapper) wrapper.classList.add('hidden');
                 document.getElementById('notif-diproses')?.classList.remove('hidden');
+                updateQrisTracker('diproses');
             }
             if (status === 'selesai') {
                 document.getElementById('notif-diproses')?.classList.add('hidden');
                 document.getElementById('notif-sukses')?.classList.remove('hidden');
+                updateQrisTracker('selesai');
+                // Tampilkan tombol Selesai yang prominent
+                document.getElementById('btn-selesai-wrapper')?.classList.remove('hidden');
+            }
+            if (status === 'dibatalkan') {
+                document.getElementById('notif-dibatalkan')?.classList.remove('hidden');
+                updateQrisTracker('dibatalkan');
             }
         }
     }
@@ -491,6 +608,37 @@
         // Reset semua ke opacity-40
         [stepMenunggu, stepDiproses, stepSelesai].forEach(el => {
             el.classList.remove('bg-amber-50','bg-blue-50','bg-emerald-50','bg-stone-50','border-l-4','border-amber-400','border-blue-400','border-emerald-400','opacity-40');
+            el.classList.add('opacity-40');
+        });
+
+        if (status === 'menunggu') {
+            stepMenunggu.classList.remove('opacity-40');
+            stepMenunggu.classList.add('bg-amber-50','border-l-4','border-amber-400');
+        } else if (status === 'diproses') {
+            stepMenunggu.classList.remove('opacity-40');
+            stepMenunggu.classList.add('bg-stone-50');
+            stepDiproses.classList.remove('opacity-40');
+            stepDiproses.classList.add('bg-blue-50','border-l-4','border-blue-400');
+        } else if (status === 'selesai') {
+            stepMenunggu.classList.remove('opacity-40');
+            stepMenunggu.classList.add('bg-stone-50');
+            stepDiproses.classList.remove('opacity-40');
+            stepDiproses.classList.add('bg-stone-50');
+            stepSelesai.classList.remove('opacity-40');
+            stepSelesai.classList.add('bg-emerald-50','border-l-4','border-emerald-400');
+        }
+    }
+
+    // ── Update QRIS Step Tracker ────────────────────────────
+    function updateQrisTracker(status) {
+        const stepMenunggu = document.getElementById('qris-step-menunggu');
+        const stepDiproses = document.getElementById('qris-step-diproses');
+        const stepSelesai  = document.getElementById('qris-step-selesai');
+        if (!stepMenunggu) return;
+
+        [stepMenunggu, stepDiproses, stepSelesai].forEach(el => {
+            el.classList.remove('bg-amber-50','bg-blue-50','bg-emerald-50','bg-stone-50',
+                                'border-l-4','border-amber-400','border-blue-400','border-emerald-400','opacity-40');
             el.classList.add('opacity-40');
         });
 

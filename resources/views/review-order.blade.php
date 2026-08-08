@@ -5,21 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesanan - Aura Coffee</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ===== REVIEW ORDER DESKTOP LAYOUT ===== */
+        @media (min-width: 768px) {
+            #edit-options-modal > div {
+                border-radius: 1rem !important;
+                max-width: 680px !important;
+            }
+        }
+        @media (min-width: 1024px) {
+            body { background-color: #f5f3ee; }
+
+            #ro-wrapper {
+                max-width: 1100px;
+                margin: 0 auto;
+                min-height: 100vh;
+                background: white;
+                box-shadow: 0 0 60px rgba(0,0,0,0.08);
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Header penuh lebar */
+            #ro-header {
+                width: 100%;
+            }
+
+            /* Body area jadi 2 kolom */
+            #ro-body {
+                display: grid;
+                grid-template-columns: 1fr 380px;
+                gap: 0;
+                align-items: start;
+                flex: 1;
+            }
+
+            /* Kolom kiri: daftar item (scrollable) */
+            #ro-left {
+                padding: 2rem;
+                border-right: 1px solid #e7e5e4;
+                min-height: 100%;
+            }
+
+            /* Kolom kanan: ringkasan + form + checkout (sticky) */
+            #ro-right {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+                background: #faf9f6;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Sticky bottom bar hilang di desktop (sudah ada di kolom kanan) */
+            #ro-sticky-bottom {
+                position: static !important;
+                border-top: none !important;
+                padding-top: 0;
+            }
+
+            /* Modal edit terpusat */
+            #edit-options-modal > div {
+                border-radius: 1rem !important;
+                max-width: 700px !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-stone-50 antialiased text-stone-800">
     
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-sm border border-stone-100 flex flex-col relative">
+    <div id="ro-wrapper" class="max-w-screen-sm md:max-w-2xl lg:max-w-none mx-auto bg-white min-h-screen shadow-sm border border-stone-100 flex flex-col relative">
         
-        <div class="p-4 border-b flex items-center bg-white sticky top-0 z-10">
+        <!-- HEADER -->
+        <div id="ro-header" class="p-4 border-b flex items-center bg-white sticky top-0 z-10">
             <button onclick="history.back()" class="mr-4 text-xl">←</button>
             <h1 class="font-bold text-lg">Pesanan</h1>
         </div>
 
-        <div id="cart-items" class="p-4 space-y-4 flex-1">
-            <!-- Item dirender via JS -->
-        </div>
+        <!-- BODY: stack di mobile, 2-kolom di desktop -->
+        <div id="ro-body" class="flex flex-col lg:block flex-1">
 
-        <div class="p-4 bg-stone-50 border-t">
+            <!-- KOLOM KIRI / AREA ATAS: daftar item -->
+            <div id="ro-left">
+                <div id="cart-items" class="p-4 lg:p-0 space-y-4">
+                    <!-- Item dirender via JS -->
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN / AREA BAWAH: ringkasan + form + tombol -->
+            <div id="ro-right">
+
+            <div class="p-4 bg-stone-50 border-t">
             <div class="border rounded-xl p-4 bg-white shadow-sm space-y-3">
                 <h3 class="font-bold text-sm border-b pb-2">Rincian Pembayaran</h3>
                 <div class="flex justify-between text-sm text-stone-600">
@@ -35,11 +112,11 @@
                     <span id="total-display" class="text-amber-900">Rp0</span>
                 </div>
             </div>
-        </div>
+            </div><!-- end rincian pembayaran -->
 
-        <!-- FORM DATA PEMESAN + TOMBOL CHECKOUT -->
-        <div class="p-4 space-y-3">
-            <div class="border rounded-xl bg-white shadow-sm p-4 space-y-3">
+            <!-- FORM DATA PEMESAN -->
+            <div class="p-4 space-y-3">
+                <div class="border rounded-xl bg-white shadow-sm p-4 space-y-3">
                 <h3 class="font-bold text-sm border-b pb-2 text-stone-800">Data Pemesan</h3>
 
                 <div>
@@ -65,13 +142,13 @@
                                class="mt-1 w-full border border-stone-200 rounded-xl p-2.5 text-sm focus:outline-none focus:border-amber-800">
                     </div>
                 </div>
-            </div>
-        </div>
+                </div><!-- end form data pemesan -->
+            </div><!-- end p-4 space-y-3 -->
 
-        <!-- PILIHAN METODE PEMBAYARAN -->
-        <div class="px-4 pb-2">
-            <div class="border rounded-xl bg-white shadow-sm p-4 space-y-3">
-                <h3 class="font-bold text-sm border-b pb-2 text-stone-800">Metode Pembayaran <span class="text-red-500">*</span></h3>
+            <!-- PILIHAN METODE PEMBAYARAN -->
+            <div class="px-4 pb-2">
+                <div class="border rounded-xl bg-white shadow-sm p-4 space-y-3">
+                    <h3 class="font-bold text-sm border-b pb-2 text-stone-800">Metode Pembayaran <span class="text-red-500">*</span></h3>
                 <div class="grid grid-cols-2 gap-3">
                     <!-- QRIS -->
                     <button id="btn-qris" onclick="pilihMetodeBayar('qris')"
@@ -111,10 +188,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-stone-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <p class="text-xs text-stone-600">Pesananmu akan dikirim ke kasir. Lakukan pembayaran tunai langsung di kasir.</p>
                 </div>
-            </div>
-        </div>
+                </div><!-- end metode pembayaran card -->
+            </div><!-- end px-4 pb-2 -->
 
-        <div class="p-4 bg-white border-t sticky bottom-0">
+            <!-- STICKY BOTTOM (checkout button) -->
+            <div id="ro-sticky-bottom" class="p-4 bg-white border-t sticky bottom-0">
             <p id="error-msg" class="hidden text-xs text-red-500 text-center mb-2"></p>
             <!-- Form tersembunyi — diisi via JS sebelum submit -->
             <form id="checkout-form" method="POST" action="{{ route('pesanan.simpan') }}">
@@ -129,7 +207,12 @@
                     class="w-full bg-[#2c1d11] text-amber-50 py-3 rounded-xl font-bold hover:bg-[#3d2a1a] transition">
                     Pilih Metode Pembayaran
                 </button>
-            </form>
+                </form>
+            </div><!-- end sticky bottom -->
+
+            </div><!-- end ro-right -->
+        </div><!-- end ro-body -->
+    </div><!-- end ro-wrapper -->
 
         <!-- ============ MODAL EDIT ADD-ON (INLINE) ============ -->
         <div id="edit-options-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end justify-center">

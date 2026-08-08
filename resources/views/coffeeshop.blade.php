@@ -6,68 +6,249 @@
     <title>Opoan Coffee</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            background-color: #faf9f6;
-            overflow-x: hidden;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        html { scroll-behavior: smooth; }
+        body { background-color: #faf9f6; overflow-x: hidden; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Wadah relatif untuk tab kategori + garis indikator */
-        #category-tabs-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        #category-tabs {
-            position: relative;
-        }
-
+        #category-tabs-wrapper { position: relative; width: 100%; }
+        #category-tabs { position: relative; }
         #category-tabs a {
-            position: relative;
-            display: inline-block;
-            color: #78716c; /* stone-500 default (non-aktif) */
-            transition: color 0.25s ease;
+            position: relative; display: inline-block;
+            color: #78716c; transition: color 0.25s ease;
         }
-
-        #category-tabs a.tab-active {
-            color: #451a03; /* amber-950 (aktif) */
-            font-weight: 600;
-        }
-
-        /* Garis bawah yang bergerak mengikuti tab aktif.
-           position:absolute membuat elemen ini dikeluarkan dari flex-flow milik
-           #category-tabs, sehingga TIDAK terkena gap dari space-x-5 pada tab-tab.
-           Posisinya dihitung relatif terhadap #category-tabs (position:relative)
-           memakai offsetLeft/offsetWidth milik tab yang aktif — sehingga akurat
-           walau tab bar sedang di-scroll horizontal. */
+        #category-tabs a.tab-active { color: #451a03; font-weight: 600; }
         #tab-indicator {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 2px;
-            width: 0;
-            background-color: #451a03; /* amber-950 */
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute; bottom: 0; left: 0;
+            height: 2px; width: 0; background-color: #451a03;
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), width 0.3s cubic-bezier(0.4,0,0.2,1);
             pointer-events: none;
         }
+
+        /* ====== DESKTOP SIDEBAR LAYOUT ====== */
+        /* Di desktop, body menjadi layout 3-kolom */
+        #desktop-layout {
+            display: flex;
+            align-items: flex-start;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar kiri: daftar kategori, sticky */
+        #desktop-sidebar {
+            display: none;
+        }
+
+        /* Sidebar kanan: cart preview, sticky */
+        #desktop-cart-sidebar {
+            display: none;
+        }
+
+        /* === TABLET (md) === */
+        @media (min-width: 768px) {
+            #floating-cart {
+                max-width: 700px;
+                left: 50%; transform: translateX(-50%);
+                right: auto; border-radius: 1rem; bottom: 1.5rem;
+            }
+            #options-modal > div, #cart-modal > div,
+            #search-overlay, #category-modal > div {
+                border-radius: 1rem !important;
+                max-width: 680px !important;
+            }
+            #search-overlay {
+                left: 50%; transform: translateX(-50%);
+                right: auto; width: 680px; max-width: 100vw;
+            }
+        }
+
+        /* === DESKTOP (lg) === */
+        @media (min-width: 1024px) {
+            body { background-color: #f5f3ee; }
+
+            /* Wrapper utama berubah jadi flex horizontal */
+            #app-wrapper {
+                max-width: 1280px;
+                margin: 0 auto;
+                display: flex;
+                align-items: flex-start;
+                gap: 0;
+                min-height: 100vh;
+                background: white;
+                box-shadow: 0 0 60px rgba(0,0,0,0.08);
+            }
+
+            /* Sidebar kiri tampil */
+            #desktop-sidebar {
+                display: flex;
+                flex-direction: column;
+                width: 220px;
+                flex-shrink: 0;
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+                background: #1c1109;
+                color: white;
+                padding: 0;
+                z-index: 20;
+            }
+
+            /* Kolom tengah (main) mengisi sisa */
+            #main-col {
+                flex: 1;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Sidebar kanan tampil */
+            #desktop-cart-sidebar {
+                display: flex;
+                flex-direction: column;
+                width: 300px;
+                flex-shrink: 0;
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+                background: #faf9f6;
+                border-left: 1px solid #e7e5e4;
+            }
+
+            /* Floating cart hilang di desktop — digantikan sidebar */
+            #floating-cart {
+                display: none !important;
+            }
+
+            /* Modal overlay tetap terpusat */
+            #options-modal > div, #cart-modal > div, #category-modal > div {
+                border-radius: 1rem !important;
+                max-width: 700px !important;
+            }
+            #search-overlay {
+                max-width: 760px;
+                left: 50%; transform: translateX(-50%);
+                right: auto; width: 760px;
+                border-radius: 0 0 1rem 1rem;
+            }
+
+            /* Tab kategori horizontal tetap ada di mobile-col, tapi di desktop
+               navigasi sudah ada di sidebar — sembunyikan tab bar */
+            #sticky-tabs-bar {
+                display: none;
+            }
+
+            /* Header sedikit lebih besar di desktop */
+            #main-header {
+                border-bottom: 1px solid #e7e5e4;
+            }
+        }
+
+        /* Styling khusus untuk desktop sidebar */
+        .ds-logo {
+            padding: 1.5rem 1.25rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .ds-nav-link {
+            display: block;
+            padding: 0.65rem 1.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 0.04em;
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .ds-nav-link:hover {
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.05);
+        }
+        .ds-nav-link.active {
+            color: #fbbf24;
+            border-left-color: #d97706;
+            background: rgba(251,191,36,0.07);
+            font-weight: 600;
+        }
+        .ds-nav-section {
+            padding: 1rem 1.25rem 0.4rem;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.25);
+        }
+
+        /* Styling sidebar cart kanan */
+        #dc-cart-list { flex: 1; overflow-y: auto; }
+        .dc-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e7e5e4;
+            font-size: 0.8rem;
+        }
+        .dc-item-name { font-weight: 600; color: #1c1917; }
+        .dc-item-details { font-size: 0.68rem; color: #a8a29e; margin-top: 1px; }
+        .dc-item-price { font-size: 0.78rem; font-weight: 700; color: #78350f; }
     </style>
 </head>
 <body class="antialiased text-stone-800">
 
-    <!-- FRAME UTAMA LAYAR MOBILE -->
-    <div class="w-full max-w-md mx-auto min-h-screen bg-white shadow-xl relative pb-32 flex flex-col">
+    <!-- WRAPPER UTAMA — di desktop jadi flex 3 kolom -->
+    <div id="app-wrapper" class="w-full mx-auto min-h-screen bg-white shadow-xl relative pb-32 lg:pb-0 flex flex-col lg:flex-row max-w-screen-sm md:max-w-2xl lg:max-w-none">
+
+        <!-- ===== DESKTOP SIDEBAR KIRI (kategori navigasi) — hanya lg ===== -->
+        <aside id="desktop-sidebar">
+            <div class="ds-logo">
+                <h1 class="text-base font-serif font-bold text-amber-100 tracking-tight">Opoan Coffee</h1>
+                <p class="text-[10px] text-stone-400 mt-1">Open today · 10:00–00:00</p>
+            </div>
+            <div class="pt-3 pb-4 flex-1 overflow-y-auto hide-scrollbar">
+                <p class="ds-nav-section">Menu</p>
+                <a href="#signature" onclick="sidebarNav('signature')" class="ds-nav-link active" id="dsnav-signature">⭐ Signature</a>
+                @foreach($kategoris as $kategori)
+                <a href="#kategori-{{ $kategori->id_kategori }}"
+                   onclick="sidebarNav('kategori-{{ $kategori->id_kategori }}')"
+                   class="ds-nav-link"
+                   id="dsnav-kategori-{{ $kategori->id_kategori }}">
+                    {{ $kategori->nama_kategori }}
+                </a>
+                @endforeach
+            </div>
+            <div class="p-4 border-t border-white/10">
+                @auth
+                <div class="flex items-center gap-2 mb-3">
+                    @if(auth()->user()->avatar)
+                        <img src="{{ auth()->user()->avatar }}" class="w-8 h-8 rounded-full object-cover" alt="avatar">
+                    @else
+                        <div class="w-8 h-8 rounded-full bg-amber-800 flex items-center justify-center text-white text-xs font-bold">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                    @endif
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold text-stone-200 truncate">{{ auth()->user()->name }}</p>
+                        <p class="text-[10px] text-stone-500 truncate">{{ auth()->user()->email }}</p>
+                    </div>
+                </div>
+                @if(auth()->user()->isAdmin() || auth()->user()->isKasir())
+                <a href="/admin" class="ds-nav-link" style="border-radius:0.5rem;margin-bottom:0.25rem;">🛠 Admin Panel</a>
+                @endif
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="ds-nav-link w-full text-left" style="color:#f87171;">← Sign Out</button>
+                </form>
+                @else
+                <a href="{{ route('login') }}" class="ds-nav-link" style="border-radius:0.5rem;">Masuk</a>
+                <a href="{{ route('register') }}" class="ds-nav-link" style="border-radius:0.5rem;color:#fbbf24;">+ Daftar</a>
+                @endauth
+            </div>
+        </aside>
+
+        <!-- ===== KOLOM TENGAH (main content) ===== -->
+        <div id="main-col" class="flex flex-col flex-1 min-w-0">
 
         <!-- HEADER UTAMA -->
-        <header class="p-5 border-b border-stone-100 bg-white sticky top-0 z-40">
+        <header id="main-header" class="p-5 border-b border-stone-100 bg-white sticky top-0 z-40">
             <div class="flex justify-between items-center mb-1">
                 <h1 class="text-xl font-serif font-bold tracking-tight text-stone-900">Opoan Coffee</h1>
 
@@ -138,8 +319,8 @@
             </div>
         </header>
 
-        <!-- KATEGORI TABS STICKY NAVIGATION -->
-        <div class="px-5 py-3.5 sticky top-[69px] bg-white z-30 border-b border-stone-100 flex items-center space-x-3">
+        <!-- KATEGORI TABS STICKY NAVIGATION (hanya mobile/tablet) -->
+        <div id="sticky-tabs-bar" class="px-5 py-3.5 sticky top-[69px] bg-white z-30 border-b border-stone-100 flex items-center space-x-3">
             <button onclick="toggleCategoryModal(true)" class="bg-[#2c1d11] text-amber-50 text-xs font-semibold tracking-wide px-3.5 py-2 rounded-lg flex items-center space-x-1 shrink-0 transition hover:bg-[#3d2a1a]">
                 <span>MENU</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
@@ -223,7 +404,7 @@
             @foreach($kategoris as $kategori)
             <section id="kategori-{{ $kategori->id_kategori }}" class="px-5 py-6 scroll-mt-36">
                 <h2 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-4">{{ $kategori->nama_kategori }}</h2>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
                     @foreach($kategori->menus as $menu)
                     @php $isAvailable = $menu->isTersedia(); @endphp
@@ -268,9 +449,10 @@
             @endforeach
 
         </main>
+        </div><!-- end #main-col -->
 
-        <!-- FLOATING BOTTOM CHECKOUT BAR -->
-        <div id="floating-cart" class="hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#2c1d11] text-amber-50 p-4 justify-between items-center shadow-2xl z-40 rounded-t-2xl border-t border-amber-900/20 transition-transform">
+        <!-- FLOATING BOTTOM CHECKOUT BAR (mobile/tablet only) -->
+        <div id="floating-cart" class="hidden fixed bottom-0 left-0 right-0 bg-[#2c1d11] text-amber-50 p-4 justify-between items-center shadow-2xl z-40 rounded-t-2xl border-t border-amber-900/20 transition-transform">
             <div class="flex items-center space-x-3.5">
                 <div class="relative bg-amber-950 text-amber-400 p-2.5 rounded-xl border border-amber-900/40 cursor-pointer" onclick="toggleCartModal(true)">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
@@ -285,6 +467,39 @@
                 Review Order (<span id="checkout-count">0</span>)
             </button>
         </div>
+
+        <!-- ===== DESKTOP CART SIDEBAR KANAN — hanya lg ===== -->
+        <aside id="desktop-cart-sidebar">
+            <div class="p-4 border-b border-stone-200 bg-white sticky top-0">
+                <h2 class="font-bold text-sm text-stone-900">Pesanan Anda</h2>
+                <p class="text-[10px] text-stone-400 mt-0.5">Item yang dipilih</p>
+            </div>
+            <div id="dc-cart-list" class="flex-1 overflow-y-auto hide-scrollbar">
+                <div id="dc-empty" class="flex flex-col items-center justify-center h-48 text-center px-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-stone-200 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <p class="text-xs text-stone-400">Keranjang masih kosong</p>
+                </div>
+                <div id="dc-items"></div>
+            </div>
+            <div class="p-4 border-t border-stone-200 bg-white">
+                <div class="flex justify-between text-xs text-stone-500 mb-1">
+                    <span>Subtotal</span>
+                    <span id="dc-subtotal" class="font-semibold text-stone-800">Rp0</span>
+                </div>
+                <div class="flex justify-between text-xs text-stone-500 mb-3">
+                    <span>PPN (10%)</span>
+                    <span id="dc-ppn" class="font-semibold text-stone-800">Rp0</span>
+                </div>
+                <div class="flex justify-between font-bold text-stone-900 text-sm border-t pt-2 mb-4">
+                    <span>Total</span>
+                    <span id="dc-total" class="text-amber-900">Rp0</span>
+                </div>
+                <button onclick="window.location.href='/review-order'" id="dc-checkout-btn"
+                    class="w-full bg-[#2c1d11] hover:bg-[#3d2a1a] text-amber-50 py-3 rounded-xl text-xs font-bold tracking-wider uppercase transition shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
+                    Review Order (<span id="dc-count">0</span> item)
+                </button>
+            </div>
+        </aside>
 
         <!-- DYNAMIC CUSTOMIZATION OPTIONS BOTTOM SHEET (CUSTOMIZE DRINK/FOOD) -->
         <div id="options-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end justify-center p-0 animate-fade-in">
@@ -992,6 +1207,84 @@ document.addEventListener('click', function (e) {
         dropdown.classList.add('hidden');
     }
 });
+
+// ============ DESKTOP SIDEBAR CART (kanan) ============
+function updateDesktopCartSidebar() {
+    const cart = getCart();
+    const dcItems = document.getElementById('dc-items');
+    const dcEmpty = document.getElementById('dc-empty');
+    const dcCount = document.getElementById('dc-count');
+    const dcSubtotal = document.getElementById('dc-subtotal');
+    const dcPpn = document.getElementById('dc-ppn');
+    const dcTotal = document.getElementById('dc-total');
+    if (!dcItems) return; // sidebar tidak ada di mobile
+
+    let subtotal = 0;
+    let totalItem = 0;
+    dcItems.innerHTML = '';
+
+    cart.forEach((item, idx) => {
+        const price = parseInt(item.finalPrice) || 0;
+        subtotal += price * item.qty;
+        totalItem += item.qty;
+        const details = [item.temp, item.sugar, item.size].filter(Boolean).join(' · ');
+        dcItems.innerHTML += `
+            <div class="dc-item">
+                <div class="flex justify-between items-start">
+                    <div class="min-w-0 flex-1">
+                        <p class="dc-item-name truncate">${escapeHtml(item.nama)}</p>
+                        ${details ? `<p class="dc-item-details">${details}</p>` : ''}
+                    </div>
+                    <div class="flex items-center gap-1.5 ml-2 shrink-0">
+                        <button onclick="dcUpdateQty(${idx}, -1)" class="w-5 h-5 flex items-center justify-center bg-stone-100 rounded text-xs font-bold text-stone-600 hover:bg-stone-200">-</button>
+                        <span class="text-xs font-bold text-stone-900 w-4 text-center">${item.qty}</span>
+                        <button onclick="dcUpdateQty(${idx}, 1)" class="w-5 h-5 flex items-center justify-center bg-stone-100 rounded text-xs font-bold text-stone-600 hover:bg-stone-200">+</button>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-1.5">
+                    <p class="dc-item-price">Rp${(price * item.qty).toLocaleString('id-ID')}</p>
+                    <button onclick="dcRemoveItem(${idx})" class="text-[10px] text-red-400 hover:text-red-600">Hapus</button>
+                </div>
+            </div>`;
+    });
+
+    const ppn = subtotal * 0.10;
+    dcEmpty.style.display = cart.length === 0 ? 'flex' : 'none';
+    if (dcSubtotal) dcSubtotal.textContent = 'Rp' + subtotal.toLocaleString('id-ID');
+    if (dcPpn) dcPpn.textContent = 'Rp' + ppn.toLocaleString('id-ID');
+    if (dcTotal) dcTotal.textContent = 'Rp' + (subtotal + ppn).toLocaleString('id-ID');
+    if (dcCount) dcCount.textContent = totalItem;
+}
+
+function dcUpdateQty(index, delta) {
+    let cart = getCart();
+    cart[index].qty = Math.max(1, cart[index].qty + delta);
+    saveCart(cart);
+    updateMainCartUI();
+}
+
+function dcRemoveItem(index) {
+    let cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+    updateMainCartUI();
+}
+
+// ============ DESKTOP SIDEBAR NAV ACTIVE ============
+function sidebarNav(tabId) {
+    document.querySelectorAll('#desktop-sidebar .ds-nav-link').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('dsnav-' + tabId);
+    if (target) target.classList.add('active');
+}
+
+// Hook desktop sidebar update ke updateMainCartUI
+const _origUpdateMainCartUI = updateMainCartUI;
+updateMainCartUI = function() {
+    _origUpdateMainCartUI();
+    updateDesktopCartSidebar();
+};
+
+document.addEventListener('DOMContentLoaded', updateDesktopCartSidebar);
     </script>
 <div id="cart-modal" class="hidden fixed inset-0 bg-black/60 z-50 items-end justify-center">
     <div class="w-full max-w-md bg-white rounded-t-2xl max-h-[85%] flex flex-col shadow-2xl">
