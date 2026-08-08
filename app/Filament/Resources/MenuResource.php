@@ -3,14 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MenuResource\Pages;
+use App\Models\Bahan;
 use App\Models\Menu;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -32,16 +33,12 @@ class MenuResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 1;
 
-    /**
-     * Hanya Admin yang bisa mengakses resource ini.
-     * Kasir tidak perlu mengelola menu/produk.
-     */
+    /** Hanya Admin */
     public static function canAccess(): bool
     {
         return auth()->check() && auth()->user()->isAdmin();
     }
 
-    // Setara dengan create.blade.php & edit.blade.php
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -79,21 +76,33 @@ class MenuResource extends Resource
                 ])
                 ->columns(1),
 
-            Section::make('Bahan-Bahan Menu')
-                ->description('Pilih bahan-bahan yang dibutuhkan untuk membuat menu ini. Digunakan sebagai referensi rekomendasi stok pada fitur Prediksi.')
+            Section::make('Bahan-Bahan Menu & Takaran Stok')
+                ->description('Tentukan bahan baku yang dibutuhkan serta jumlah takaran untuk 1 porsi menu ini. Stok fisik bahan baku akan otomatis berkurang saat pesanan dibuat.')
                 ->schema([
-                    CheckboxList::make('bahans')
-                        ->label('Pilih Bahan')
-                        ->relationship('bahans', 'nama_bahan')
-                        ->searchable()
-                        ->bulkToggleable()
-                        ->gridDirection('row')
-                        ->columns(3),
+                    Repeater::make('bahan_items')
+                        ->label('Komposisi Bahan Baku')
+                        ->schema([
+                            Select::make('id_bahan')
+                                ->label('Bahan Baku')
+                                ->options(fn () => Bahan::pluck('nama_bahan', 'id_bahan'))
+                                ->searchable()
+                                ->required(),
+
+                            TextInput::make('jumlah_dibutuhkan')
+                                ->label('Jumlah Takaran / Porsi')
+                                ->numeric()
+                                ->default(1)
+                                ->minValue(1)
+                                ->required()
+                                ->helperText('Jumlah stok bahan yang berkurang per 1 porsi pesanan.'),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(0)
+                        ->addActionLabel('Tambah Bahan Baku'),
                 ]),
         ]);
     }
 
-    // Setara dengan index.blade.php (tabel + sorting + aksi)
     public static function table(Table $table): Table
     {
         return $table
@@ -130,6 +139,18 @@ class MenuResource extends Resource
                     ->counts('bahans')
                     ->badge()
                     ->color('info'),
+
+                TextColumn::make('stok_status')
+                    ->label('Status Stok')
+                    ->state(function (Menu $record): string {
+                        return $record->isTersedia() ? 'Tersedia' : 'Habis';
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Tersedia' => 'success',
+                        'Habis' => 'danger',
+                        default => 'secondary',
+                    }),
             ])
             ->filters([
                 SelectFilter::make('id_kategori')

@@ -8,4 +8,21 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateMenu extends CreateRecord
 {
     protected static string $resource = MenuResource::class;
+
+    protected function afterCreate(): void
+    {
+        $menu = $this->record;
+        $items = $this->data['bahan_items'] ?? [];
+
+        $syncData = [];
+        foreach ($items as $item) {
+            if (!empty($item['id_bahan'])) {
+                $syncData[$item['id_bahan']] = [
+                    'jumlah_dibutuhkan' => (int)($item['jumlah_dibutuhkan'] ?? 1)
+                ];
+            }
+        }
+
+        $menu->bahans()->sync($syncData);
+    }
 }
