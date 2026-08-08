@@ -126,18 +126,18 @@ Flowchart ini menjelaskan bagaimana pelanggan memilih menu, sistem mengecek stok
 
 ```mermaid
 flowchart TD
-    A([Pelanggan Buka Web Coffeeshop]) --> B[Lihat Daftar Menu & Status Stok]
-    B --> C{Apakah Bahan Baku Menu Tersedia?}
-    C -- Tidak --> D[Tombol Add Mati & Tampil Badge 'Stok Habis']
-    C -- Ya --> E[Pelanggan Tambahkan Menu ke Keranjang]
-    E --> F[Isi Form Pemesanan: Nama, Meja, Metode Bayar]
-    F --> G[Klik Tombol 'Pesan Sekarang']
-    G --> H{Sistem Pengecekan Ketersediaan Stok}
-    H -- Stok Kurang --> I[Tampilkan Pesan Peringatan Stok Tidak Cukup]
-    H -- Stok Cukup --> J[Simpan Data Pesanan & Detail Pesanan]
-    J --> K[Otomatis Reduction/Decrement Stok Bahan Baku di Database]
-    K --> L[Tampilkan Ringkasan & Struk Pesanan]
-    L --> M([Selesai])
+    A(["Pelanggan Buka Web Coffeeshop"]) --> B["Lihat Daftar Menu & Status Stok"]
+    B --> C{"Apakah Bahan Baku Menu Tersedia?"}
+    C -- "Tidak" --> D["Tombol Add Mati & Tampil Badge Stok Habis"]
+    C -- "Ya" --> E["Pelanggan Tambahkan Menu ke Keranjang"]
+    E --> F["Isi Form Pemesanan: Nama, Meja, Metode Bayar"]
+    F --> G["Klik Tombol Pesan Sekarang"]
+    G --> H{"Sistem Pengecekan Ketersediaan Stok"}
+    H -- "Stok Kurang" --> I["Tampilkan Pesan Peringatan Stok Tidak Cukup"]
+    H -- "Stok Cukup" --> J["Simpan Data Pesanan & Detail Pesanan"]
+    J --> K["Otomatis Reduction/Decrement Stok Bahan Baku di Database"]
+    K --> L["Tampilkan Ringkasan & Struk Pesanan"]
+    L --> M(["Selesai"])
 ```
 
 ---
@@ -147,27 +147,27 @@ Flowchart ini menggambarkan proses registrasi akun baru untuk pelanggan guna men
 
 ```mermaid
 flowchart TD
-    Start([Pengguna Masuk Halaman Register]) --> Choice{Pilih Metode Pendaftaran}
-    Choice -- Google Socialite --> GAuth[Klik 'Daftar dengan Google']
-    GAuth --> GCallback[Redirect ke Google OAuth Callback]
-    GCallback --> GCheck{User Sudah Ada?}
-    GCheck -- Ya --> GLogin[Login Langsung]
-    GCheck -- Tidak --> GCreate[Buat Akun Baru + Set Role 'user']
+    Start(["Pengguna Masuk Halaman Register"]) --> Choice{"Pilih Metode Pendaftaran"}
+    Choice -- "Google Socialite" --> GAuth["Klik Daftar dengan Google"]
+    GAuth --> GCallback["Redirect ke Google OAuth Callback"]
+    GCallback --> GCheck{"User Sudah Ada?"}
+    GCheck -- "Ya" --> GLogin["Login Langsung"]
+    GCheck -- "Tidak" --> GCreate["Buat Akun Baru + Set Role user"]
     GCreate --> GLogin
 
-    Choice -- Email & Password --> FormSubmit[Isi Nama, Email, Password]
-    FormSubmit --> GenOTP[Sistem Generate 6-Digit OTP Dummy]
-    GenOTP --> SaveSession[Simpan Data Sementara di Sesi]
-    SaveSession --> OTPPage[Redirect ke Halaman Verifikasi OTP]
-    OTPPage --> Banner[Tampilkan Banner OTP Simulasi]
-    Banner --> InputOTP[Input 6 Digit Kode OTP]
-    InputOTP --> Verify{Apakah Kode Match?}
-    Verify -- Tidak --> ErrorMsg[Tampilkan Pesan Error OTP Salah]
+    Choice -- "Email & Password" --> FormSubmit["Isi Nama, Email, Password"]
+    FormSubmit --> GenOTP["Sistem Generate 6-Digit OTP Dummy"]
+    GenOTP --> SaveSession["Simpan Data Sementara di Sesi"]
+    SaveSession --> OTPPage["Redirect ke Halaman Verifikasi OTP"]
+    OTPPage --> Banner["Tampilkan Banner OTP Simulasi"]
+    Banner --> InputOTP["Input 6 Digit Kode OTP"]
+    InputOTP --> Verify{"Apakah Kode Match?"}
+    Verify -- "Tidak" --> ErrorMsg["Tampilkan Pesan Error OTP Salah"]
     ErrorMsg --> InputOTP
-    Verify -- Ya --> CreateAccount[Buat Akun User Baru & Hapus Sesi OTP]
-    CreateAccount --> AutoLogin[Otomatis Auth::login]
+    Verify -- "Ya" --> CreateAccount["Buat Akun User Baru & Hapus Sesi OTP"]
+    CreateAccount --> AutoLogin["Otomatis Auth::login"]
     
-    GLogin --> RedirectHome([Masuk ke Dashboard / Halaman Utama Menu])
+    GLogin --> RedirectHome(["Masuk ke Dashboard / Halaman Utama Menu"])
     AutoLogin --> RedirectHome
 ```
 
@@ -178,19 +178,19 @@ Flowchart ini menjelaskan bagaimana admin mengelola bisnis dan memprediksi kebut
 
 ```mermaid
 flowchart TD
-    Admin([Admin Login di Filament Panel]) --> Dashboard[Pilih Menu 'Prediksi Stok']
-    Dashboard --> FormInput[Input Parameter: Hari, Promo, Bulan]
-    FormInput --> MLRequest[Kirim HTTP Request ke FastAPI /predict]
-    MLRequest --> MLExecute[FastAPI Jalankan Model Scikit-Learn]
-    MLExecute --> MLResponse[Kembalikan Hasil Prediksi: Laris / Kurang Laris]
-    MLResponse --> DisplayRec[Tampilkan Status Prediksi & Rekomendasi Restock Bahan]
-    DisplayRec --> Action[Admin Lakukan Top-Up Stok di 'Kelola Bahan']
+    Admin(["Admin Login di Filament Panel"]) --> Dashboard["Pilih Menu Prediksi Stok"]
+    Dashboard --> FormInput["Input Parameter: Hari, Promo, Bulan"]
+    FormInput --> MLRequest["Kirim HTTP Request ke FastAPI /predict"]
+    MLRequest --> MLExecute["FastAPI Jalankan Model Scikit-Learn"]
+    MLExecute --> MLResponse["Kembalikan Hasil Prediksi: Laris / Kurang Laris"]
+    MLResponse --> DisplayRec["Tampilkan Status Prediksi & Rekomendasi Restock Bahan"]
+    DisplayRec --> Action["Admin Lakukan Top-Up Stok di Kelola Bahan"]
 
-    Admin --> ReportMenu[Pilih Menu 'Laporan Penjualan']
-    ReportMenu --> FilterDate[Pilih Filter Rentang Tanggal]
-    FilterDate --> ViewMetrics[Tampilkan Total Pendapatan, Transaksi & Item Terjual]
-    ViewMetrics --> ExportPDF[Klik 'Export PDF Laporan']
-    ExportPDF --> Download([Download File PDF Laporan Penjualan])
+    Admin --> ReportMenu["Pilih Menu Laporan Penjualan"]
+    ReportMenu --> FilterDate["Pilih Filter Rentang Tanggal"]
+    FilterDate --> ViewMetrics["Tampilkan Total Pendapatan, Transaksi & Item Terjual"]
+    ViewMetrics --> ExportPDF["Klik Export PDF Laporan"]
+    ExportPDF --> Download(["Download File PDF Laporan Penjualan"])
 ```
 
 ---
