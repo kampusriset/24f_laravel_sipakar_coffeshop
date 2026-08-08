@@ -128,7 +128,7 @@
         <div class="mx-4 mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-4 text-white slide-up">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider opacity-80">🎉 Selamat! Anda mendapat diskon</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider opacity-80">Selamat! Anda mendapat diskon</p>
                     <p class="text-2xl font-extrabold mt-0.5">{{ $pesanan->persen_diskon }}% OFF</p>
                     <p class="text-xs opacity-75 mt-1">Hemat Rp{{ number_format($pesanan->diskon, 0, ',', '.') }} dari pesanan ini</p>
                 </div>
@@ -418,7 +418,7 @@
             </div>
             {{-- Step 3: Selesai --}}
             <div id="qris-step-selesai" class="px-4 py-3 flex items-center gap-3 border-t border-stone-100 {{ $pesanan->status === 'selesai' ? 'bg-emerald-50 border-l-4 border-emerald-400' : 'opacity-40' }}">
-                <div class="text-xl">🎉</div>
+                <div class="text-xl"></div>
                 <div class="flex-1">
                     <p class="text-xs font-bold text-stone-800">Pesanan Siap!</p>
                     <p class="text-[10px] text-stone-500">
@@ -443,7 +443,7 @@
         </div>
 
         <div id="notif-sukses" class="hidden mx-4 mt-4 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-2xl p-4 flex items-center gap-3 slide-up">
-            <div class="text-2xl">🎉</div>
+            <div class="text-2xl"></div>
             <div>
                 <p class="font-bold text-sm">Pesanan Siap!</p>
                 <p class="text-xs text-emerald-700">
