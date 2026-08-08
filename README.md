@@ -15,9 +15,7 @@
 | Nama Lengkap | NIM |
 | :--- | :--- |
 | **Arizal Firdaus Bagus Pratama** | `2413010683` |
-| **Muhammad Hanif Hidayah Saputra** | `[NIM]` |
-| **Hanif Difa Syarifudin** | `[NIM]` |
-| **Ridwan Rafli Hidayat** | `[NIM]` |
+| **Muhammad Hanif Hidayah Saputra** | `2413010672` |
 
 ---
 
