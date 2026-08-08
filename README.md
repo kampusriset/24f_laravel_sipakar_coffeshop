@@ -1,58 +1,199 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ☕ Sistem Informasi Pemesanan & Manajemen Stok Coffeeshop (SIPAKAR)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Filament](https.img.shields.io/badge/Filament_v3-F2B329?style=for-the-badge&logo=laravel&logoColor=black)](https://filamentphp.com)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Python](https://img.shields.io/badge/Python_3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 
-## About Laravel
+**SIPAKAR Coffeeshop** adalah aplikasi manajemen bisnis coffee shop modern berbasis web. Aplikasi ini mengintegrasikan platform pemesanan mandiri untuk pelanggan (*Self-Ordering System*), panel administrasi berbasis **Filament v3**, pemotongan stok bahan baku otomatis berbasis resep, serta **Machine Learning Microservice** untuk prediksi ketersediaan dan rekomendasi pemulihan stok.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 👥 Tim Kontributor & Pengembang
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Nama Lengkap | NIM | Peran / Deskripsi Tugas |
+| :--- | :--- | :--- |
+| **[Nama Anda]** | `[NIM Anda]` | Lead Developer / Backend & Frontend Integration |
+| **[Nama Anggota 2]** | `[NIM Anggota 2]` | Database Engineer & UI/UX Designer |
+| **[Nama Anggota 3]** | `[NIM Anggota 3]` | Machine Learning Integration & QA Tester |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Dokumentasi Development
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Dokumentasi Development ini memuat panduan arsitektur teknis, prasyarat lingkungan, serta langkah-langkah dalam menyiapkan (*setup*) dan menjalankan lingkungan pengembangan (*local development environment*).
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### 📐 Arsitektur Sistem
+Aplikasi ini dibangun menggunakan pendekatan **Hybrid Microservice**:
+1. **Laravel 10/11 (Main Core)**: Menangani routing pelanggan, otentikasi (Socialite & OTP), manajemen pesanan, dan Filament Admin Panel.
+2. **FastAPI ML Microservice (`/ml-api`)**: Service Python terpisah yang mengeksekusi model Machine Learning (`model_dt.pkl`) untuk memprediksi kategori menu *Laris* vs *Kurang Laris* dan memberikan rekomendasi stok.
+3. **Database Layer**: Menggunakan MySQL / PostgreSQL (Supabase) dengan dukungan migrasi & seeder penuh.
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 💻 Prasyarat Sistem (Prerequisites)
+Sebelum menjalankan proyek, pastikan perangkat Anda telah terpasang software berikut:
+- **PHP** `>= 8.2` (dengan ekstensi `pdo`, `mbstring`, `openssl`, `curl`, `gd`)
+- **Composer** `>= 2.x`
+- **Node.js** `>= 18.x` & **NPM**
+- **Python** `>= 3.10` & `pip`
+- **Database**: MySQL `>= 8.0` atau PostgreSQL (Supabase)
 
+---
+
+### 🚀 Langkah-Langkah Setup (Development Installation)
+
+#### 1. Clone Repository & Install Dependensi PHP/JS
 ```bash
-composer require laravel/boost --dev
+git clone https://github.com/kampusriset/24f_laravel_sipakar_coffeshop.git
+cd 24f_laravel_sipakar_coffeshop
 
-php artisan boost:install
+# Install dependensi Laravel
+composer install
+
+# Install dependensi Frontend
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+#### 2. Konfigurasi Environment (`.env`)
+Salin file environment dan generate Application Key:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Contributing
+Pastikan pengaturan database di `.env` sudah sesuai:
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=coffeeshop
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### 3. Migrasi & Seeder Database
+Jalankan migrasi database beserta data awal (*default admin, kasir, menu, kategori, dan bahan baku*):
+```bash
+php artisan migrate:fresh --seed
+php artisan storage:link
+```
 
-## Code of Conduct
+#### 4. Setup Microservice Machine Learning (Python FastAPI)
+Masuk ke direktori `ml-api` dan siapkan virtual environment:
+```bash
+cd ml-api
+python3 -m venv venv
+source venv/bin/activate # Di Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cd ..
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+### ⚡ Menjalankan Aplikasi
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Anda dapat menjalankan seluruh komponen aplikasi (Laravel Web, Filament Admin, Vite Assets, dan FastAPI ML Service) secara **otomatis** dengan 1 perintah:
 
-## License
+- **Linux / macOS**:
+  ```bash
+  ./start-dev.sh
+  ```
+- **Windows**:
+  ```cmd
+  start-dev.bat
+  ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Aplikasi akan aktif di alamat:
+- 🌐 **Web Pelanggan**: `http://localhost:8000`
+- ⚙️ **Admin Panel (Filament)**: `http://localhost:8000/admin`
+- 🤖 **Machine Learning API**: `http://localhost:8001/docs`
+
+#### 🔐 Kredensial Pengguna Bawaan (Default Credentials):
+- **Super Admin**: `admin@coffeeshop.com` | Password: `admin123`
+- **Kasir**: `kasir@coffeeshop.com` | Password: `kasir123`
+- **Pelanggan Demo**: `user@coffeeshop.com` | Password: `user123`
+
+---
+
+## 📊 Alur & Flowchart Sistem
+
+Berikut adalah diagram alur proses utama yang berjalan dalam aplikasi **SIPAKAR Coffeeshop**:
+
+### 1. Alur Pemesanan Pelanggan & Pengurangan Stok Otomatis
+Flowchart ini menjelaskan bagaimana pelanggan memilih menu, sistem mengecek stok bahan baku, hingga stok terpotong secara otomatis saat transaksi dibuat:
+
+```mermaid
+flowchart TD
+    A([Pelanggan Buka Web Coffeeshop]) --> B[Lihat Daftar Menu & Status Stok]
+    B --> C{Apakah Bahan Baku Menu Tersedia?}
+    C -- Tidak --> D[Tombol Add Mati & Tampil Badge 'Stok Habis']
+    C -- Ya --> E[Pelanggan Tambahkan Menu ke Keranjang]
+    E --> F[Isi Form Pemesanan: Nama, Meja, Metode Bayar]
+    F --> G[Klik Tombol 'Pesan Sekarang']
+    G --> H{Sistem Pengecekan Ketersediaan Stok}
+    H -- Stok Kurang --> I[Tampilkan Pesan Peringatan Stok Tidak Cukup]
+    H -- Stok Cukup --> J[Simpan Data Pesanan & Detail Pesanan]
+    J --> K[Otomatis Reduction/Decrement Stok Bahan Baku di Database]
+    K --> L[Tampilkan Ringkasan & Struk Pesanan]
+    L --> M([Selesai])
+```
+
+---
+
+### 2. Alur Registrasi Akun Pelanggan (Email + OTP Dummy & Google Socialite)
+Flowchart ini menggambarkan proses registrasi akun baru untuk pelanggan guna mendapatkan diskon promo acak:
+
+```mermaid
+flowchart TD
+    Start([Pengguna Masuk Halaman Register]) --> Choice{Pilih Metode Pendaftaran}
+    Choice -- Google Socialite --> GAuth[Klik 'Daftar dengan Google']
+    GAuth --> GCallback[Redirect ke Google OAuth Callback]
+    GCallback --> GCheck{User Sudah Ada?}
+    GCheck -- Ya --> GLogin[Login Langsung]
+    GCheck -- Tidak --> GCreate[Buat Akun Baru + Set Role 'user']
+    GCreate --> GLogin
+
+    Choice -- Email & Password --> FormSubmit[Isi Nama, Email, Password]
+    FormSubmit --> GenOTP[Sistem Generate 6-Digit OTP Dummy]
+    GenOTP --> SaveSession[Simpan Data Sementara di Sesi]
+    SaveSession --> OTPPage[Redirect ke Halaman Verifikasi OTP]
+    OTPPage --> Banner[Tampilkan Banner OTP Simulasi]
+    Banner --> InputOTP[Input 6 Digit Kode OTP]
+    InputOTP --> Verify{Apakah Kode Match?}
+    Verify -- Tidak --> ErrorMsg[Tampilkan Pesan Error OTP Salah]
+    ErrorMsg --> InputOTP
+    Verify -- Ya --> CreateAccount[Buat Akun User Baru & Hapus Sesi OTP]
+    CreateAccount --> AutoLogin[Otomatis Auth::login]
+    
+    GLogin --> RedirectHome([Masuk ke Dashboard / Halaman Utama Menu])
+    AutoLogin --> RedirectHome
+```
+
+---
+
+### 3. Alur Dashboard Laporan Penjualan & Prediksi Stok Machine Learning
+Flowchart ini menjelaskan bagaimana admin mengelola bisnis dan memprediksi kebutuhan stok bahan baku:
+
+```mermaid
+flowchart TD
+    Admin([Admin Login di Filament Panel]) --> Dashboard[Pilih Menu 'Prediksi Stok']
+    Dashboard --> FormInput[Input Parameter: Hari, Promo, Bulan]
+    FormInput --> MLRequest[Kirim HTTP Request ke FastAPI /predict]
+    MLRequest --> MLExecute[FastAPI Jalankan Model Scikit-Learn]
+    MLExecute --> MLResponse[Kembalikan Hasil Prediksi: Laris / Kurang Laris]
+    MLResponse --> DisplayRec[Tampilkan Status Prediksi & Rekomendasi Restock Bahan]
+    DisplayRec --> Action[Admin Lakukan Top-Up Stok di 'Kelola Bahan']
+
+    Admin --> ReportMenu[Pilih Menu 'Laporan Penjualan']
+    ReportMenu --> FilterDate[Pilih Filter Rentang Tanggal]
+    FilterDate --> ViewMetrics[Tampilkan Total Pendapatan, Transaksi & Item Terjual]
+    ViewMetrics --> ExportPDF[Klik 'Export PDF Laporan']
+    ExportPDF --> Download([Download File PDF Laporan Penjualan])
+```
+
+---
+
+## 📝 Lisensi
+Proyek ini dibuat untuk keperluan tugas akademik dan pengembangan sistem informasi bisnis Coffee Shop. Open-source di bawah lisensi [MIT License](LICENSE).
