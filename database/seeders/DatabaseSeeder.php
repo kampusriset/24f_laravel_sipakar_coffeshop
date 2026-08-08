@@ -43,11 +43,12 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // ── Seeder Data Menu ───────────────────────────────────
+        // ── Seeder Data Menu & Promo ───────────────────────────
         $this->call([
             KategoriMenuSeeder::class,
             MenuSeeder::class,
             BahanSeeder::class,
+            PromoSeeder::class,
         ]);
     }
 }
