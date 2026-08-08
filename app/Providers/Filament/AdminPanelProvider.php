@@ -11,6 +11,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use App\Filament\Widgets\CashOrdersWidget;
+use App\Filament\Widgets\QrisOrdersWidget;
 use App\Filament\Widgets\DashboardStats;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
@@ -42,6 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 DashboardStats::class,
                 CashOrdersWidget::class,
+                QrisOrdersWidget::class,
                 AccountWidget::class,
             ])
             ->middleware([

@@ -9,19 +9,19 @@ use Filament\Actions\Action;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class CashOrdersWidget extends BaseWidget
+class QrisOrdersWidget extends BaseWidget
 {
-    protected static ?int $sort = 2;
-    protected static ?string $heading = '🧾 Pesanan Cash, Menunggu Konfirmasi';
-    protected string $pollingInterval = '5s'; // Refresh lebih cepat
+    protected static ?int $sort = 3;
+    protected static ?string $heading = '📱 Pesanan QRIS, Menunggu Konfirmasi';
+    protected string $pollingInterval = '5s';
 
     // Lebar penuh
     protected int|string|array $columnSpan = 'full';
 
-    // Hanya tampil jika ada pesanan cash yang menunggu/diproses
+    // Hanya tampil jika ada pesanan QRIS yang menunggu/diproses
     public static function canView(): bool
     {
-        return Pesanan::where('metode_bayar', 'cash')
+        return Pesanan::where('metode_bayar', 'qris')
             ->whereDate('created_at', today())
             ->whereIn('status', ['menunggu', 'diproses'])
             ->exists();
@@ -33,10 +33,10 @@ class CashOrdersWidget extends BaseWidget
             ->query(
                 Pesanan::query()
                     ->with('details')
-                    ->where('metode_bayar', 'cash')
+                    ->where('metode_bayar', 'qris')
                     ->whereDate('created_at', today())
                     ->whereIn('status', ['menunggu', 'diproses'])
-                    ->orderBy('created_at', 'asc') // Yang paling lama menunggu di atas
+                    ->orderBy('created_at', 'asc')
             )
             ->columns([
                 TextColumn::make('kode_pesanan')
@@ -106,38 +106,40 @@ class CashOrdersWidget extends BaseWidget
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Tutup'),
 
-                // Terima pesanan cash
-                Action::make('terima')
-                    ->label('✅ Terima')
-                    ->color('success')
+                // Konfirmasi pembayaran QRIS diterima
+                Action::make('konfirmasi_qris')
+                    ->label('📱 Konfirmasi Bayar')
+                    ->color('info')
                     ->icon('heroicon-o-check-circle')
                     ->visible(fn (Pesanan $r) => $r->status === 'menunggu')
                     ->requiresConfirmation()
-                    ->modalHeading('Terima pesanan cash ini?')
-                    ->modalDescription(fn (Pesanan $r) => "Pelanggan: {$r->nama_pelanggan} | Total: Rp " . number_format($r->total_akhir, 0, ',', '.'))
+                    ->modalHeading('Konfirmasi pembayaran QRIS diterima?')
+                    ->modalDescription(fn (Pesanan $r) => "Pelanggan: {$r->nama_pelanggan} | Total: Rp " . number_format($r->total_akhir, 0, ',', '.') . "\n\nPastikan pembayaran QRIS sudah berhasil masuk sebelum mengkonfirmasi.")
                     ->action(fn (Pesanan $r) => $r->update(['status' => 'diproses'])),
 
-                Action::make('selesai')
-                    ->label('Selesai')
-                    ->color('primary')
+                // Tandai selesai setelah pesanan siap diambil → status: selesai
+                Action::make('selesai_qris')
+                    ->label('✅ Selesai')
+                    ->color('success')
                     ->icon('heroicon-o-flag')
                     ->visible(fn (Pesanan $r) => $r->status === 'diproses')
                     ->requiresConfirmation()
-                    ->modalHeading('Tandai pesanan selesai?')
-                    ->modalDescription('Pastikan pembayaran tunai sudah diterima sebelum klik Selesai.')
+                    ->modalHeading('Tandai pesanan QRIS ini selesai?')
+                    ->modalDescription('Pastikan pesanan sudah siap dan dapat diambil oleh pelanggan.')
                     ->action(fn (Pesanan $r) => $r->update(['status' => 'selesai'])),
 
-                Action::make('batal')
+                // Batalkan pesanan
+                Action::make('batal_qris')
                     ->label('Batalkan')
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
-                    ->visible(fn (Pesanan $r) => $r->status === 'menunggu')
+                    ->visible(fn (Pesanan $r) => in_array($r->status, ['menunggu', 'diproses']))
                     ->requiresConfirmation()
-                    ->modalHeading('Batalkan pesanan ini?')
+                    ->modalHeading('Batalkan pesanan QRIS ini?')
                     ->action(fn (Pesanan $r) => $r->update(['status' => 'dibatalkan'])),
             ])
-            ->emptyStateHeading('Tidak ada pesanan cash yang menunggu.')
-            ->emptyStateDescription('Semua pesanan cash sudah diproses atau belum ada pesanan baru.')
+            ->emptyStateHeading('Tidak ada pesanan QRIS yang menunggu.')
+            ->emptyStateDescription('Semua pesanan QRIS sudah diproses atau belum ada pesanan baru.')
             ->emptyStateIcon('heroicon-o-check-badge')
             ->paginated(false);
     }

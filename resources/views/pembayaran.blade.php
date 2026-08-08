@@ -5,11 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran - Aura Coffee</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ===== PEMBAYARAN DESKTOP LAYOUT ===== */
+        @media (min-width: 768px) {
+            #konfirmasi-overlay > div {
+                border-radius: 1rem !important;
+                max-width: 680px !important;
+            }
+        }
+        @media (min-width: 1024px) {
+            body { background-color: #f5f3ee; }
+
+            #pmb-wrapper {
+                max-width: 1100px;
+                margin: 0 auto;
+                min-height: 100vh;
+                background: white;
+                box-shadow: 0 0 60px rgba(0,0,0,0.08);
+                display: flex;
+                flex-direction: column;
+            }
+
+            #pmb-body {
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                gap: 0;
+                flex: 1;
+            }
+
+            /* Kolom kiri: form data + metode bayar */
+            #pmb-left {
+                padding: 2rem;
+                border-right: 1px solid #e7e5e4;
+                overflow-y: auto;
+            }
+
+            /* Kolom kanan: ringkasan + tombol bayar */
+            #pmb-right {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+                background: #faf9f6;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Tombol bayar di kanan tidak sticky lagi */
+            #pmb-right .sticky { position: static !important; }
+
+            #konfirmasi-overlay > div {
+                border-radius: 1rem !important;
+                max-width: 700px !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-stone-50 antialiased text-stone-800">
 
-<div class="max-w-md mx-auto bg-white min-h-screen shadow-sm border border-stone-100 flex flex-col">
+<div id="pmb-wrapper" class="max-w-screen-sm md:max-w-2xl lg:max-w-none mx-auto bg-white min-h-screen shadow-sm border border-stone-100 flex flex-col">
 
     <!-- Header -->
     <div class="p-4 border-b flex items-center bg-white sticky top-0 z-10">
@@ -21,6 +76,11 @@
         </h1>
     </div>
 
+    <!-- BODY: stack di mobile, 2-kolom di desktop -->
+    <div id="pmb-body" class="flex flex-col lg:block flex-1">
+
+        <!-- KOLOM KIRI / AREA ATAS: form data + metode -->
+        <div id="pmb-left">
     <!-- Content -->
     <div class="flex-1 pb-28">
 
@@ -148,8 +208,12 @@
             </p>
         </div>
 
-    </div>
+        </div><!-- end section-kasir -->
 
+        </div><!-- end pmb-left -->
+
+        <!-- KOLOM KANAN / AREA BAWAH: bottom action bar -->
+        <div id="pmb-right">
     <!-- Bottom: Promo, Total Pembayaran (collapsible), Tombol Bayar -->
     <div class="bg-white border-t sticky bottom-0 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
 
@@ -205,9 +269,10 @@
 
         </div>
 
-    </div>
-
-</div>
+    </div><!-- end sticky bottom -->
+    </div><!-- end pmb-right -->
+    </div><!-- end pmb-body -->
+</div><!-- end pmb-wrapper -->
 
     <!-- ============ POPUP KONFIRMASI PEMBAYARAN ============ -->
     <div id="konfirmasi-overlay" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end justify-center">

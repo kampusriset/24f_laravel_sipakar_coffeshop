@@ -222,6 +222,7 @@ class PesananResource extends Resource
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->extraModalFooterActions([
+                        // ── Cash: Terima & Proses ──────────────────────────
                         \Filament\Actions\Action::make('terima_cash_modal')
                             ->label('✅ Terima & Proses (Cash)')
                             ->color('success')
@@ -229,6 +230,34 @@ class PesananResource extends Resource
                             ->requiresConfirmation()
                             ->modalHeading('Terima pesanan cash ini?')
                             ->action(fn (Pesanan $r) => $r->update(['status' => 'diproses'])),
+
+                        // ── QRIS: Konfirmasi pembayaran diterima ───────────
+                        \Filament\Actions\Action::make('konfirmasi_qris_modal')
+                            ->label('📱 Konfirmasi Bayar (QRIS)')
+                            ->color('info')
+                            ->visible(fn (Pesanan $r) => $r->metode_bayar === 'qris' && $r->status === 'menunggu')
+                            ->requiresConfirmation()
+                            ->modalHeading('Konfirmasi pembayaran QRIS diterima?')
+                            ->modalDescription('Pastikan pembayaran QRIS dari pelanggan sudah berhasil sebelum mengkonfirmasi.')
+                            ->action(fn (Pesanan $r) => $r->update(['status' => 'diproses'])),
+
+                        // ── QRIS: Tandai selesai ───────────────────────────
+                        \Filament\Actions\Action::make('selesai_qris_modal')
+                            ->label('✅ Tandai Selesai (QRIS)')
+                            ->color('success')
+                            ->visible(fn (Pesanan $r) => $r->metode_bayar === 'qris' && $r->status === 'diproses')
+                            ->requiresConfirmation()
+                            ->modalHeading('Tandai pesanan QRIS ini selesai?')
+                            ->action(fn (Pesanan $r) => $r->update(['status' => 'selesai'])),
+
+                        // ── QRIS: Batalkan ─────────────────────────────────
+                        \Filament\Actions\Action::make('batal_qris_modal')
+                            ->label('❌ Batalkan (QRIS)')
+                            ->color('danger')
+                            ->visible(fn (Pesanan $r) => $r->metode_bayar === 'qris' && in_array($r->status, ['menunggu', 'diproses']))
+                            ->requiresConfirmation()
+                            ->modalHeading('Yakin batalkan pesanan QRIS ini?')
+                            ->action(fn (Pesanan $r) => $r->update(['status' => 'dibatalkan'])),
                     ]),
 
                 \Filament\Actions\Action::make('proses')
