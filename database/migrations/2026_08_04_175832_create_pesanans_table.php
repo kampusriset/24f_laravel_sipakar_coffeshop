@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nomor_hp', 20)->nullable();
             $table->integer('nomor_meja')->nullable();
             $table->enum('status', ['menunggu', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu');
-            $table->enum('metode_bayar', ['qris'])->default('qris');
+            $table->enum('metode_bayar', ['qris', 'cash'])->default('qris');
             $table->unsignedBigInteger('subtotal');     // sebelum PPN
             $table->unsignedBigInteger('ppn');          // 10%
             $table->unsignedBigInteger('diskon')->default(0); // diskon random untuk user login
