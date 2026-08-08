@@ -10,11 +10,10 @@ class MenuPelangganController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data kategori beserta menu yang berelasi
-        $kategoris = KategoriMenu::with('menus')->get();
+        // Eager load menus beserta relasi bahans untuk mencegah N+1 Query ke Supabase
+        $kategoris = KategoriMenu::with('menus.bahans')->get();
 
         // ── Best Seller Hari Ini ────────────────────────────────────────────
-        // Ambil nama_menu + total qty terjual dari detail_pesanans hari ini
         $bestSellerHariIni = DB::table('detail_pesanans')
             ->join('pesanans', 'detail_pesanans.pesanan_id', '=', 'pesanans.id')
             ->whereDate('pesanans.created_at', today())
@@ -27,7 +26,7 @@ class MenuPelangganController extends Controller
         // Cari data menu lengkap (gambar, harga, id) berdasarkan nama
         $bestSellerMenu = null;
         if ($bestSellerHariIni) {
-            $bestSellerMenu = Menu::with('kategori')
+            $bestSellerMenu = Menu::with(['kategori', 'bahans'])
                 ->where('nama_menu', $bestSellerHariIni->nama_menu)
                 ->first();
             if ($bestSellerMenu) {
@@ -37,7 +36,7 @@ class MenuPelangganController extends Controller
 
         // Fallback: jika belum ada transaksi hari ini, tampilkan menu pertama
         if (!$bestSellerMenu) {
-            $bestSellerMenu = Menu::with('kategori')->first();
+            $bestSellerMenu = Menu::with(['kategori', 'bahans'])->first();
             if ($bestSellerMenu) {
                 $bestSellerMenu->total_terjual = 0;
             }
