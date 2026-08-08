@@ -18,7 +18,14 @@ class PromoForm
                 Section::make()->schema([
                     TextInput::make('judul')->required()->maxLength(255),
                     Textarea::make('deskripsi')->maxLength(65535),
-                    TextInput::make('diskon_persen')->numeric()->default(0)->label('Diskon (%)')->helperText('Gunakan angka, misalnya 10 atau 20'),
+                    TextInput::make('diskon_persen')
+                        ->numeric()
+                        ->minValue(0)
+                        ->maxValue(100)
+                        ->default(0)
+                        ->suffix('%')
+                        ->label('Diskon (%)')
+                        ->helperText('Masukkan angka persentase diskon antara 0% hingga 100%'),
                     Toggle::make('is_active')->label('Aktif?')->default(false),
                     Select::make('menus')->multiple()->relationship('menus', 'nama_menu')->preload()->label('Menu yang Promo'),
                 ])
