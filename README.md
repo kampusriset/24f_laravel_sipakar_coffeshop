@@ -125,6 +125,11 @@ Berikut adalah diagram alur proses utama yang berjalan dalam aplikasi **SIPAKAR 
 ### 1. Alur Pemesanan Pelanggan & Pengurangan Stok Otomatis
 Flowchart ini menjelaskan bagaimana pelanggan memilih menu, sistem mengecek stok bahan baku, hingga stok terpotong secara otomatis saat transaksi dibuat:
 
+![Flowchart Pemesanan & Stok](public/flowchart/flowchart_pemesanan_stok.png)
+
+<details>
+<summary><b>Lihat Kode Mermaid</b></summary>
+
 ```mermaid
 graph TD
     A["Pelanggan Buka Web Coffeeshop"] --> B["Lihat Daftar Menu & Status Stok"]
@@ -140,11 +145,17 @@ graph TD
     K --> L["Tampilkan Ringkasan & Struk Pesanan"]
     L --> M["Selesai"]
 ```
+</details>
 
 ---
 
 ### 2. Alur Registrasi Akun Pelanggan (Email + OTP Dummy & Google Socialite)
 Flowchart ini menggambarkan proses registrasi akun baru untuk pelanggan guna mendapatkan diskon promo acak:
+
+![Flowchart Registrasi & OTP](public/flowchart/flowchart_registrasi_otp.png)
+
+<details>
+<summary><b>Lihat Kode Mermaid</b></summary>
 
 ```mermaid
 graph TD
@@ -171,11 +182,17 @@ graph TD
     GLogin --> RedirectHome["Masuk ke Dashboard / Halaman Utama Menu"]
     AutoLogin --> RedirectHome
 ```
+</details>
 
 ---
 
 ### 3. Alur Dashboard Laporan Penjualan & Prediksi Stok Machine Learning
 Flowchart ini menjelaskan bagaimana admin mengelola bisnis dan memprediksi kebutuhan stok bahan baku:
+
+![Flowchart Prediksi & Laporan](public/flowchart/flowchart_prediksi_laporan.png)
+
+<details>
+<summary><b>Lihat Kode Mermaid</b></summary>
 
 ```mermaid
 graph TD
@@ -193,6 +210,7 @@ graph TD
     ViewMetrics --> ExportPDF["Klik Export PDF Laporan"]
     ExportPDF --> Download["Download File PDF Laporan Penjualan"]
 ```
+</details>
 
 ---
 
