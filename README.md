@@ -1,7 +1,7 @@
 # ☕ Sistem Informasi Pemesanan & Manajemen Stok Coffeeshop (SIPAKAR)
 
 [![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![Filament](https.img.shields.io/badge/Filament_v3-F2B329?style=for-the-badge&logo=laravel&logoColor=black)](https://filamentphp.com)
+[![Filament](https://img.shields.io/badge/Filament_v3-F2B329?style=for-the-badge&logo=laravel&logoColor=black)](https://filamentphp.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python_3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
@@ -12,11 +12,12 @@
 
 ## 👥 Tim Kontributor & Pengembang
 
-| Nama Lengkap | NIM | Peran / Deskripsi Tugas |
-| :--- | :--- | :--- |
-| **[Nama Anda]** | `[NIM Anda]` | Lead Developer / Backend & Frontend Integration |
-| **[Nama Anggota 2]** | `[NIM Anggota 2]` | Database Engineer & UI/UX Designer |
-| **[Nama Anggota 3]** | `[NIM Anggota 3]` | Machine Learning Integration & QA Tester |
+| Nama Lengkap | NIM |
+| :--- | :--- |
+| **Arizal Firdaus Bagus Pratama** | `2413010683` |
+| **Muhammad Hanif Hidayah Saputra** | `2413010698` |
+| **Hanif Difa Syarifudin** | `2413010681` |
+| **Ridwan Rafli Hidayat** | `2413010672` |
 
 ---
 
@@ -125,19 +126,19 @@ Berikut adalah diagram alur proses utama yang berjalan dalam aplikasi **SIPAKAR 
 Flowchart ini menjelaskan bagaimana pelanggan memilih menu, sistem mengecek stok bahan baku, hingga stok terpotong secara otomatis saat transaksi dibuat:
 
 ```mermaid
-flowchart TD
-    A(["Pelanggan Buka Web Coffeeshop"]) --> B["Lihat Daftar Menu & Status Stok"]
+graph TD
+    A["Pelanggan Buka Web Coffeeshop"] --> B["Lihat Daftar Menu & Status Stok"]
     B --> C{"Apakah Bahan Baku Menu Tersedia?"}
-    C -- "Tidak" --> D["Tombol Add Mati & Tampil Badge Stok Habis"]
-    C -- "Ya" --> E["Pelanggan Tambahkan Menu ke Keranjang"]
+    C -->|Tidak| D["Tombol Add Mati & Tampil Badge Stok Habis"]
+    C -->|Ya| E["Pelanggan Tambahkan Menu ke Keranjang"]
     E --> F["Isi Form Pemesanan: Nama, Meja, Metode Bayar"]
     F --> G["Klik Tombol Pesan Sekarang"]
     G --> H{"Sistem Pengecekan Ketersediaan Stok"}
-    H -- "Stok Kurang" --> I["Tampilkan Pesan Peringatan Stok Tidak Cukup"]
-    H -- "Stok Cukup" --> J["Simpan Data Pesanan & Detail Pesanan"]
+    H -->|Stok Kurang| I["Tampilkan Pesan Peringatan Stok Tidak Cukup"]
+    H -->|Stok Cukup| J["Simpan Data Pesanan & Detail Pesanan"]
     J --> K["Otomatis Reduction/Decrement Stok Bahan Baku di Database"]
     K --> L["Tampilkan Ringkasan & Struk Pesanan"]
-    L --> M(["Selesai"])
+    L --> M["Selesai"]
 ```
 
 ---
@@ -146,28 +147,28 @@ flowchart TD
 Flowchart ini menggambarkan proses registrasi akun baru untuk pelanggan guna mendapatkan diskon promo acak:
 
 ```mermaid
-flowchart TD
-    Start(["Pengguna Masuk Halaman Register"]) --> Choice{"Pilih Metode Pendaftaran"}
-    Choice -- "Google Socialite" --> GAuth["Klik Daftar dengan Google"]
+graph TD
+    Start["Pengguna Masuk Halaman Register"] --> Choice{"Pilih Metode Pendaftaran"}
+    Choice -->|Google Socialite| GAuth["Klik Daftar dengan Google"]
     GAuth --> GCallback["Redirect ke Google OAuth Callback"]
     GCallback --> GCheck{"User Sudah Ada?"}
-    GCheck -- "Ya" --> GLogin["Login Langsung"]
-    GCheck -- "Tidak" --> GCreate["Buat Akun Baru + Set Role user"]
+    GCheck -->|Ya| GLogin["Login Langsung"]
+    GCheck -->|Tidak| GCreate["Buat Akun Baru + Set Role user"]
     GCreate --> GLogin
 
-    Choice -- "Email & Password" --> FormSubmit["Isi Nama, Email, Password"]
+    Choice -->|Email & Password| FormSubmit["Isi Nama, Email, Password"]
     FormSubmit --> GenOTP["Sistem Generate 6-Digit OTP Dummy"]
     GenOTP --> SaveSession["Simpan Data Sementara di Sesi"]
     SaveSession --> OTPPage["Redirect ke Halaman Verifikasi OTP"]
     OTPPage --> Banner["Tampilkan Banner OTP Simulasi"]
     Banner --> InputOTP["Input 6 Digit Kode OTP"]
     InputOTP --> Verify{"Apakah Kode Match?"}
-    Verify -- "Tidak" --> ErrorMsg["Tampilkan Pesan Error OTP Salah"]
+    Verify -->|Tidak| ErrorMsg["Tampilkan Pesan Error OTP Salah"]
     ErrorMsg --> InputOTP
-    Verify -- "Ya" --> CreateAccount["Buat Akun User Baru & Hapus Sesi OTP"]
+    Verify -->|Ya| CreateAccount["Buat Akun User Baru & Hapus Sesi OTP"]
     CreateAccount --> AutoLogin["Otomatis Auth::login"]
     
-    GLogin --> RedirectHome(["Masuk ke Dashboard / Halaman Utama Menu"])
+    GLogin --> RedirectHome["Masuk ke Dashboard / Halaman Utama Menu"]
     AutoLogin --> RedirectHome
 ```
 
@@ -177,8 +178,8 @@ flowchart TD
 Flowchart ini menjelaskan bagaimana admin mengelola bisnis dan memprediksi kebutuhan stok bahan baku:
 
 ```mermaid
-flowchart TD
-    Admin(["Admin Login di Filament Panel"]) --> Dashboard["Pilih Menu Prediksi Stok"]
+graph TD
+    Admin["Admin Login di Filament Panel"] --> Dashboard["Pilih Menu Prediksi Stok"]
     Dashboard --> FormInput["Input Parameter: Hari, Promo, Bulan"]
     FormInput --> MLRequest["Kirim HTTP Request ke FastAPI /predict"]
     MLRequest --> MLExecute["FastAPI Jalankan Model Scikit-Learn"]
@@ -190,7 +191,7 @@ flowchart TD
     ReportMenu --> FilterDate["Pilih Filter Rentang Tanggal"]
     FilterDate --> ViewMetrics["Tampilkan Total Pendapatan, Transaksi & Item Terjual"]
     ViewMetrics --> ExportPDF["Klik Export PDF Laporan"]
-    ExportPDF --> Download(["Download File PDF Laporan Penjualan"])
+    ExportPDF --> Download["Download File PDF Laporan Penjualan"]
 ```
 
 ---
