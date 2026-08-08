@@ -166,9 +166,9 @@
                                             </p>
                                             <p style="font-size:0.75rem; margin:0.2rem 0 0; color:{{ $accentColor }};">
                                                 @if ($isLaris)
-                                                    Pasok lebih banyak bahan ini — permintaan diprediksi meningkat bulan depan.
+                                                    Pasok lebih banyak bahan ini - menu diprediksi meningkat pada kondisi yang dipilih.
                                                 @else
-                                                    Tahan pembelian bahan ini — menu diprediksi kurang diminati bulan depan.
+                                                    Tahan pembelian bahan ini - menu diprediksi kurang diminati pada kondisi yang dipilih.
                                                 @endif
                                             </p>
                                         </div>
