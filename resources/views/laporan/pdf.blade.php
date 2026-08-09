@@ -97,6 +97,7 @@
             <th>Pelanggan</th>
             <th>Meja</th>
             <th>Item Dipesan</th>
+            <th>Promo</th>
             <th class="right">Subtotal</th>
             <th class="right">PPN</th>
             <th class="right">Diskon</th>
@@ -115,6 +116,13 @@
             <td>
                 {{ $pesanan->details->map(fn($d) => $d->nama_menu . ' ×' . $d->qty)->join(', ') }}
             </td>
+            <td>
+                @if($pesanan->details->contains('is_promo', true))
+                    <span class="badge badge-selesai">Ya</span>
+                @else
+                    <span class="badge badge-menunggu">Tidak</span>
+                @endif
+            </td>
             <td class="right">Rp {{ number_format($pesanan->subtotal, 0, ',', '.') }}</td>
             <td class="right">Rp {{ number_format($pesanan->subtotal > 0 ? $pesanan->ppn : 0, 0, ',', '.') }}</td>
             <td class="right">{{ $pesanan->diskon > 0 ? '-Rp ' . number_format($pesanan->diskon, 0, ',', '.') : '—' }}</td>
@@ -124,13 +132,13 @@
             </td>
         </tr>
         @empty
-        <tr><td colspan="11" style="text-align:center;padding:28px;color:#78716c;">Tidak ada transaksi pada periode ini.</td></tr>
+        <tr><td colspan="12" style="text-align:center;padding:28px;color:#78716c;">Tidak ada transaksi pada periode ini.</td></tr>
         @endforelse
     </tbody>
     @if($pesanans->isNotEmpty())
     <tfoot>
         <tr>
-            <td colspan="6"><strong>TOTAL ({{ $totalTransaksi }} Transaksi)</strong></td>
+            <td colspan="7"><strong>TOTAL ({{ $totalTransaksi }} Transaksi)</strong></td>
             <td class="right">Rp {{ number_format($pesanans->sum('subtotal'), 0, ',', '.') }}</td>
             <td class="right">Rp {{ number_format($pesanans->sum('ppn'), 0, ',', '.') }}</td>
             <td class="right">-Rp {{ number_format($pesanans->sum('diskon'), 0, ',', '.') }}</td>

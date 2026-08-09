@@ -48,4 +48,16 @@ class DetailPesanan extends Model
         ]);
         return implode(', ', $parts) ?: '-';
     }
+
+    /**
+     * Cek apakah menu ini sedang dalam promo aktif.
+     */
+    public function getIsPromoAttribute(): bool
+    {
+        $menu = \App\Models\Menu::where('nama_menu', $this->nama_menu)->first();
+        if ($menu) {
+            return $menu->promos()->where('is_active', true)->exists();
+        }
+        return false;
+    }
 }
