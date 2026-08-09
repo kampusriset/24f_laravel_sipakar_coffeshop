@@ -21,6 +21,11 @@ class Menu extends Model
         return $this->belongsTo(KategoriMenu::class, 'id_kategori', 'id_kategori');
     }
 
+    public function promos()
+    {
+        return $this->belongsToMany(Promo::class, 'menu_promo', 'menu_id', 'promo_id');
+    }
+
     public function bahans()
     {
         return $this->belongsToMany(Bahan::class, 'menu_bahan', 'id_menu', 'id_bahan')

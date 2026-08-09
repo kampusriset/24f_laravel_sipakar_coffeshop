@@ -343,12 +343,70 @@
         <!-- AREA KONTEN DAFTAR MENU -->
         <main class="flex-1 bg-white">
 
+            <!-- PROMO BANNER -->
+            @if(isset($promos) && $promos->count() > 0)
+            <div id="promo-banner" class="px-5 pt-5 mb-2 scroll-mt-36">
+                <!-- Promo banner container with horizontal scroll or grid -->
+                <div class="flex overflow-x-auto hide-scrollbar space-x-4 pb-4">
+                    @foreach($promos as $promo)
+                    <div class="min-w-[320px] sm:min-w-[360px] bg-gradient-to-r from-amber-600 to-amber-800 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden shrink-0">
+                        <!-- Decorative bg -->
+                        <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
+                        <div class="relative z-10 flex flex-col h-full justify-between">
+                            <div>
+                                <span class="bg-white/20 text-white text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded inline-block mb-3">
+                                    Spesial Promo @if($promo->diskon_persen > 0) Diskon {{ $promo->diskon_persen }}% @endif
+                                </span>
+                                <h3 class="text-xl font-bold font-serif mb-1">{{ $promo->judul }}</h3>
+                                <p class="text-xs text-amber-100/90 leading-relaxed max-w-[95%]">{{ $promo->deskripsi }}</p>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-white/20">
+                                @if($promo->menus->count() > 0)
+                                <p class="text-[10px] font-semibold uppercase tracking-wider text-amber-200 mb-2">Berlaku untuk Menu:</p>
+                                <div class="flex flex-col gap-2">
+                                    @foreach($promo->menus->take(3) as $m)
+                                    @php
+                                        $hargaNormal = $m->harga;
+                                        $hargaDiskon = $hargaNormal - ($hargaNormal * ($promo->diskon_persen / 100));
+                                    @endphp
+                                    <div class="flex justify-between items-center bg-white/10 px-3 py-1.5 rounded-lg border border-white/20">
+                                        <span class="text-xs font-bold">{{ $m->nama_menu }}</span>
+                                        <div class="text-right">
+                                            @if($promo->diskon_persen > 0)
+                                            <span class="text-[9px] line-through text-amber-200/70 mr-1">Rp{{ number_format($hargaNormal, 0, ',', '.') }}</span>
+                                            @endif
+                                            <span class="text-xs font-bold text-amber-50">Rp{{ number_format($hargaDiskon, 0, ',', '.') }}</span>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                    @if($promo->menus->count() > 3)
+                                    <span class="text-[10px] text-center text-amber-200/90 mt-1 cursor-pointer">+ {{ $promo->menus->count() - 3 }} Menu Lainnya</span>
+                                    @endif
+                                </div>
+                                @else
+                                <p class="text-[10px] text-amber-100">Cek info lengkap di kasir</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <!-- BEST SELLER HARI INI -->
             @if($bestSellerMenu)
+            @php
+                $bsPromo = $bestSellerMenu->promos->first();
+                $bsHargaFinal = $bestSellerMenu->harga;
+                if ($bsPromo && $bsPromo->diskon_persen > 0) {
+                    $bsHargaFinal = $bestSellerMenu->harga - ($bestSellerMenu->harga * ($bsPromo->diskon_persen / 100));
+                }
+            @endphp
             <div id="signature" class="px-5 pt-5 mb-6 menu-item scroll-mt-36"
                  data-id="{{ $bestSellerMenu->id_menu }}"
                  data-nama="{{ $bestSellerMenu->nama_menu }}"
-                 data-harga="{{ $bestSellerMenu->harga }}"
+                 data-harga="{{ $bsHargaFinal }}"
                  data-tipe="{{ $bestSellerMenu->tipe ?? 'drink' }}"
                  data-kategori="{{ $bestSellerMenu->kategori->nama_kategori ?? '' }}">
                 <div class="bg-gradient-to-r from-stone-950 via-[#2c1d11] to-stone-900 rounded-2xl p-5 text-white shadow-xl relative overflow-hidden border border-amber-950/40">
@@ -373,7 +431,10 @@
                                 Menu favorit pelanggan hari ini dari kategori {{ $bestSellerMenu->kategori->nama_kategori ?? 'kami' }}.
                             </p>
                             <div class="mt-4 flex items-center space-x-2.5">
-                                <span class="text-base font-bold text-amber-400">Rp{{ number_format($bestSellerMenu->harga, 0, ',', '.') }}</span>
+                                @if($bsPromo && $bsPromo->diskon_persen > 0)
+                                    <span class="text-xs font-bold text-stone-400 line-through mr-1">Rp{{ number_format($bestSellerMenu->harga, 0, ',', '.') }}</span>
+                                @endif
+                                <span class="text-base font-bold text-amber-400">Rp{{ number_format($bsHargaFinal, 0, ',', '.') }}</span>
                                 @if($bestSellerMenu->total_terjual > 0)
                                     <span class="text-[9px] text-stone-400 bg-stone-900/60 px-2 py-0.5 rounded border border-stone-800 font-mono">🔥 {{ $bestSellerMenu->total_terjual }} sold today</span>
                                 @endif
@@ -410,11 +471,18 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
                     @foreach($kategori->menus as $menu)
-                    @php $isAvailable = $menu->isTersedia(); @endphp
+                    @php 
+                        $isAvailable = $menu->isTersedia(); 
+                        $activePromo = $menu->promos->first();
+                        $hargaFinal = $menu->harga;
+                        if ($activePromo && $activePromo->diskon_persen > 0) {
+                            $hargaFinal = $menu->harga - ($menu->harga * ($activePromo->diskon_persen / 100));
+                        }
+                    @endphp
                     <div class="bg-stone-50/60 rounded-2xl p-3.5 border border-stone-100 flex flex-col justify-between menu-item {{ !$isAvailable ? 'opacity-70' : '' }}"
                          data-id="{{ $menu->id_menu }}"
                          data-nama="{{ $menu->nama_menu }}"
-                         data-harga="{{ $menu->harga }}"
+                         data-harga="{{ $hargaFinal }}"
                          data-tipe="{{ $menu->tipe }}"
                          data-kategori="{{ $kategori->nama_kategori }}">
                         <div>
@@ -437,9 +505,12 @@
                             <p class="text-[11px] text-stone-500 line-clamp-2 mt-1 leading-relaxed font-light">{{ $menu->deskripsi }}</p>
                         </div>
                         <div class="mt-4">
-                            <span class="text-sm font-bold text-stone-900 block mb-2.5">Rp{{ number_format($menu->harga, 0, ',', '.') }}</span>
+                            @if($activePromo && $activePromo->diskon_persen > 0)
+                                <span class="text-xs font-bold text-stone-400 line-through block mb-1">Rp{{ number_format($menu->harga, 0, ',', '.') }}</span>
+                            @endif
+                            <span class="text-sm font-bold text-amber-700 block mb-2.5">Rp{{ number_format($hargaFinal, 0, ',', '.') }}</span>
                             @if($isAvailable)
-                                <button class="w-full border border-stone-800 text-stone-800 hover:bg-stone-900 hover:text-white text-xs font-semibold py-1.5 rounded-lg transition" onclick="handleAddClick('{{ $menu->id_menu }}')">Add</button>
+                                <button class="w-full border border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white text-xs font-semibold py-1.5 rounded-lg transition" onclick="handleAddClick('{{ $menu->id_menu }}')">Add</button>
                             @else
                                 <button disabled class="w-full border border-stone-200 bg-stone-100 text-stone-400 cursor-not-allowed text-xs font-semibold py-1.5 rounded-lg">Stok Habis</button>
                             @endif
