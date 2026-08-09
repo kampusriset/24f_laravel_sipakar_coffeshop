@@ -363,8 +363,8 @@
                             <div class="mt-4 pt-4 border-t border-white/20">
                                 @if($promo->menus->count() > 0)
                                 <p class="text-[10px] font-semibold uppercase tracking-wider text-amber-200 mb-2">Berlaku untuk Menu:</p>
-                                <div class="flex flex-col gap-2">
-                                    @foreach($promo->menus->take(3) as $m)
+                                <div class="flex flex-col gap-2 max-h-40 overflow-y-auto hide-scrollbar pr-1">
+                                    @foreach($promo->menus as $m)
                                     @php
                                         $hargaNormal = $m->harga;
                                         $hargaDiskon = $hargaNormal - ($hargaNormal * ($promo->diskon_persen / 100));
@@ -379,9 +379,6 @@
                                         </div>
                                     </div>
                                     @endforeach
-                                    @if($promo->menus->count() > 3)
-                                    <span class="text-[10px] text-center text-amber-200/90 mt-1 cursor-pointer">+ {{ $promo->menus->count() - 3 }} Menu Lainnya</span>
-                                    @endif
                                 </div>
                                 @else
                                 <p class="text-[10px] text-amber-100">Cek info lengkap di kasir</p>
