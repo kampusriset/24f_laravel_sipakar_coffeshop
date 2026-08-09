@@ -33,13 +33,14 @@ class LaporanController extends Controller
         $output .= "Digenerate: " . now()->format('d/m/Y H:i') . "\r\n";
         $output .= "\r\n";
 
-        $output .= implode(',', ['"No"', '"Kode Pesanan"', '"Tanggal"', '"Pelanggan"', '"Meja"', '"Item Dipesan"', '"Subtotal (Rp)"', '"PPN (Rp)"', '"Diskon (Rp)"', '"Total (Rp)"', '"Status"']) . "\r\n";
+        $output .= implode(',', ['"No"', '"Kode Pesanan"', '"Tanggal"', '"Pelanggan"', '"Meja"', '"Item Dipesan"', '"Promo"', '"Subtotal (Rp)"', '"PPN (Rp)"', '"Diskon (Rp)"', '"Total (Rp)"', '"Status"']) . "\r\n";
 
         $totalPendapatan = 0;
         $no = 1;
 
         foreach ($pesanans as $pesanan) {
             $namaItem = $pesanan->details->map(fn ($d) => $d->nama_menu . ' x' . $d->qty)->join('; ');
+            $isPromo = $pesanan->details->contains('is_promo', true) ? 'Ya' : 'Tidak';
             $output .= implode(',', [
                 $no++,
                 '"' . $pesanan->kode_pesanan . '"',
@@ -47,6 +48,7 @@ class LaporanController extends Controller
                 '"' . $pesanan->nama_pelanggan . '"',
                 '"' . ($pesanan->nomor_meja ?? 'Takeaway') . '"',
                 '"' . $namaItem . '"',
+                '"' . $isPromo . '"',
                 $pesanan->subtotal,
                 $pesanan->ppn,
                 $pesanan->diskon,
@@ -57,7 +59,7 @@ class LaporanController extends Controller
         }
 
         $output .= "\r\n";
-        $output .= '"","","","","","TOTAL PENDAPATAN","","","","' . $totalPendapatan . '","' . count($pesanans) . ' Transaksi"' . "\r\n";
+        $output .= '"","","","","","TOTAL PENDAPATAN","","","","","' . $totalPendapatan . '","' . count($pesanans) . ' Transaksi"' . "\r\n";
 
         return response($output, 200, [
             'Content-Type'        => 'text/csv; charset=UTF-8',
